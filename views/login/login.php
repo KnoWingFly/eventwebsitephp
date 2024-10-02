@@ -1,4 +1,3 @@
-<!-- Login and Signup form (login.php) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>

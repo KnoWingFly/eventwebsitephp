@@ -1,33 +1,25 @@
 <?php
-// session_start(); // Removed, assuming session has already been started elsewhere
 
-require_once '../model/Event.php'; // Adjust path according to your project structure
-
-// Simulating a logged-in user
-if (!isset($_SESSION['user_id'])) {
-    $_SESSION['user_id'] = 'U0001'; // Assuming the user ID is a CHAR(5)
-}
+require_once "../model/Event.php";
 
 $event = new Event();
 
-// Handle form submissions
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST['create_event'])) {
-        $event->createEvent(
-            $_POST['title'],
-            $_POST['description'],
-            $_POST['schedule'],
-            $_POST['location'],
-            $_POST['event_date']
-        );
-    } elseif (isset($_POST['register_event'])) {
-        $event->registerUserForEvent($_SESSION['user_id'], $_POST['event_id']);
-    }
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+	if (isset($_POST["create_event"])) {
+		$event->createEvent(
+			$_POST["title"],
+			$_POST["description"],
+			$_POST["schedule"],
+			$_POST["location"],
+			$_POST["event_date"]
+		);
+	} elseif (isset($_POST["register_event"])) {
+		$event->registerUserForEvent($_SESSION["user_id"], $_POST["event_id"]);
+	}
 }
 
-// Fetch all events and registered events
 $allEvents = $event->getAllEvents();
-$registeredEvents = $event->getRegisteredEvents($_SESSION['user_id']);
+$registeredEvents = $event->getRegisteredEvents($_SESSION["user_id"]);
 ?>
 
 <!DOCTYPE html>
@@ -64,13 +56,13 @@ $registeredEvents = $event->getRegisteredEvents($_SESSION['user_id']);
     <ul>
     <?php foreach ($allEvents as $evt): ?>
         <li>
-            <h3><?= htmlspecialchars($evt['title']) ?></h3>
-            <p><?= htmlspecialchars($evt['description']) ?></p>
-            <p>Schedule: <?= htmlspecialchars($evt['schedule']) ?></p>
-            <p>Location: <?= htmlspecialchars($evt['location']) ?></p>
-            <p>Date: <?= htmlspecialchars($evt['event_date']) ?></p>
+            <h3><?= htmlspecialchars($evt["title"]) ?></h3>
+            <p><?= htmlspecialchars($evt["description"]) ?></p>
+            <p>Schedule: <?= htmlspecialchars($evt["schedule"]) ?></p>
+            <p>Location: <?= htmlspecialchars($evt["location"]) ?></p>
+            <p>Date: <?= htmlspecialchars($evt["event_date"]) ?></p>
             <form method="POST">
-                <input type="hidden" name="event_id" value="<?= $evt['id'] ?>">
+                <input type="hidden" name="event_id" value="<?= $evt["id"] ?>">
                 <input type="submit" name="register_event" value="Register for Event">
             </form>
         </li>
@@ -81,7 +73,7 @@ $registeredEvents = $event->getRegisteredEvents($_SESSION['user_id']);
     <ul>
     <?php foreach ($registeredEvents as $evt): ?>
         <li>
-            <h3><?= htmlspecialchars($evt['title']) ?></h3> 
+            <h3><?= htmlspecialchars($evt["title"]) ?></h3> 
         </li>
     <?php endforeach; ?>
     </ul>
