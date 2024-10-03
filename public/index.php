@@ -1,8 +1,10 @@
 <?php
 session_start();
 require_once "../Controller/UserController.php";
+require_once "../Controller/EventController.php";
 
 $userController = new UserController();
+$eventController = new EventController();
 
 $path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 $currentRoute = $_SERVER["REQUEST_URI"];
@@ -16,7 +18,6 @@ if (!isset($_SESSION["user_id"]) && !in_array($path, $publicRoutes)) {
 
 // Root redirection
 if ($path == "/") {
-	var_dump($_SESSION); // Debugging: Check if session is being set correctly
 	header("Location: " . (isset($_SESSION["user_id"]) ? "/home" : "/login"));
 	exit();
 }
@@ -30,15 +31,17 @@ switch ($path) {
 	case "/login":
 		if ($_SERVER["REQUEST_METHOD"] === "POST") {
 			if (isset($_POST["email"], $_POST["password"])) {
-				$email = $_POST["email"];
-				$password = $_POST["password"];
-				$userController->login($email, $password);
+				$userController->login($_POST["email"], $_POST["password"]);
 			} else {
 				echo "Email or password is missing.";
 			}
 		} else {
 			require __DIR__ . "/../views/login/login.php";
 		}
+		break;
+
+	case "/logout":
+		$userController->logout();
 		break;
 
 	case "/signup":
@@ -55,15 +58,11 @@ switch ($path) {
 					$_POST["confirm_password"]
 				)
 			) {
-				$name = $_POST["name"];
-				$email = $_POST["email"];
-				$password = $_POST["password"];
-				$confirm_password = $_POST["confirm_password"];
 				$userController->register(
-					$name,
-					$email,
-					$password,
-					$confirm_password
+					$_POST["name"],
+					$_POST["email"],
+					$_POST["password"],
+					$_POST["confirm_password"]
 				);
 			} else {
 				echo "Name, email, password, or confirm password is missing.";
@@ -72,13 +71,38 @@ switch ($path) {
 		break;
 
 	case "/events":
-		$eventController = new EventController($db);
-		$eventController->listAvailableEvents();
+		if (
+			$_SERVER["REQUEST_METHOD"] === "POST" &&
+			isset($_POST["create_event"])
+		) {
+			$eventController->listAvailableEvents(); // This will include event creation
+		} else {
+			$eventController->listAvailableEvents();
+		}
+		break;
+
+	case "/create-event":
+		if (
+			$_SERVER["REQUEST_METHOD"] === "POST" &&
+			isset($_POST["event_title"], $_POST["event_description"])
+		) {
+			// Process the event creation
+			$eventController->createEvent(
+				$_POST["event_title"],
+				$_POST["event_description"],
+				$_POST["event_date"],
+				$_POST["event_location"]
+			);
+
+			header("Location: /events");
+			exit();
+		} else {
+			require __DIR__ . "/../views/event/create_event.php";
+		}
 		break;
 
 	case "/event-details":
 		if (isset($_GET["id"])) {
-			$eventController = new EventController($db);
 			$eventController->showEventDetails($_GET["id"]);
 		} else {
 			echo "Event ID is missing.";
@@ -90,7 +114,6 @@ switch ($path) {
 			$_SERVER["REQUEST_METHOD"] === "POST" &&
 			isset($_POST["event_id"])
 		) {
-			$eventController = new EventController($db);
 			$eventController->registerForEvent(
 				$_SESSION["user_id"],
 				$_POST["event_id"]
@@ -105,7 +128,6 @@ switch ($path) {
 			$_SERVER["REQUEST_METHOD"] === "POST" &&
 			isset($_POST["event_id"])
 		) {
-			$eventController = new EventController($db);
 			$eventController->cancelRegistration(
 				$_SESSION["user_id"],
 				$_POST["event_id"]
@@ -116,11 +138,11 @@ switch ($path) {
 		break;
 
 	case "/registered-events":
-		$eventController = new EventController($db);
 		$eventController->listRegisteredEvents($_SESSION["user_id"]);
 		break;
 
 	default:
+		http_response_code(404);
 		echo "404 - Page not found.";
 		break;
 }

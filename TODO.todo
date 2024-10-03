@@ -1,0 +1,20 @@
+//Todo: 
+A. Admin Feature:
+    1. Admin Dashboard
+    2. Event Management
+    3. View Event Registration
+    4. User Management
+
+B. User Feature:
+    1. Registration & Authentication
+    2. Event Browsing
+    3. Event Registration
+    4. User Profile Management
+
+//DONE:
+
+B. User Feature:
+    1. Registration & Authentication
+        Sign UP (DONE)
+        LOGIN (DONE)
+        Log Out (DONE)

@@ -1,7 +1,6 @@
 <?php
 require_once "../config/db.php";
 
-// Ensure the session is started only once
 if (session_status() === PHP_SESSION_NONE) {
 	session_start();
 }
@@ -18,16 +17,13 @@ class UserController
 
 	public function register($name, $email, $password, $confirm_password)
 	{
-		// Validate that the passwords match
 		if ($password !== $confirm_password) {
 			echo "Passwords do not match.";
 			return;
 		}
 
-		// Hash the password
 		$hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-		// Prepare the SQL statement
 		$stmt = $this->db->prepare(
 			"INSERT INTO users (name, email, password) VALUES (?, ?, ?)"
 		);
@@ -43,7 +39,6 @@ class UserController
 
 	public function login($email, $password)
 	{
-		// Prepare SQL statement
 		$stmt = $this->db->prepare("SELECT * FROM users WHERE email = ?");
 		$stmt->bind_param("s", $email);
 		$stmt->execute();
@@ -51,12 +46,8 @@ class UserController
 		$result = $stmt->get_result();
 		$user = $result->fetch_assoc();
 
-		// Verify password
 		if ($user && password_verify($password, $user["password"])) {
-			// Make sure session is already started at the beginning of the file
-			$_SESSION["user_id"] = $user["Id_user"]; // Correctly set session user_id
-
-			// Redirect to home after successful login
+			$_SESSION["user_id"] = $user["Id_user"];
 			header("Location: /home");
 			exit();
 		} else {
@@ -66,7 +57,7 @@ class UserController
 
 	public function logout()
 	{
-		session_unset();
+		session_start();
 		session_destroy();
 		header("Location: /login");
 		exit();

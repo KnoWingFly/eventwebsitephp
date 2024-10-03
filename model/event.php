@@ -16,7 +16,15 @@ class Event
 		$query =
 			"SELECT * FROM events WHERE event_date >= CURDATE() ORDER BY event_date ASC";
 		$result = $this->conn->query($query);
-		return $result->fetch_all(MYSQLI_ASSOC);
+
+		if (!$result) {
+			echo "Query error: " . $this->conn->error;
+			return [];
+		}
+
+		$events = $result->fetch_all(MYSQLI_ASSOC);
+
+		return $events;
 	}
 
 	public function getEventById($id)

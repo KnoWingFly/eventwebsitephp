@@ -1,3 +1,5 @@
+CREATE DATABASE Events;
+
 USE events;
 
 CREATE TABLE users(
@@ -13,7 +15,6 @@ CREATE TABLE events (
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
-    schedule VARCHAR(255) NOT NULL,
     location VARCHAR(255) NOT NULL,
     event_date DATE NOT NULL
 );

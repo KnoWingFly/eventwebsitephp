@@ -21,12 +21,10 @@
     <div id="signup" class="block">
       <h1 class="text-3xl text-center text-white mb-6">Sign Up for Free</h1>
       <form action="/register" method="post">
-        <div class="flex gap-4">
           <div class="mt-6">
             <label class="text-gray-400">Name<span class="text-red-500">*</span></label>
             <input type="text" name="name" required autocomplete="off" class="w-full p-3 mt-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:border-teal-500">
           </div>
-        </div>
         <div class="mt-6">
           <label class="text-gray-400">Email Address<span class="text-red-500">*</span></label>
           <input type="email" name="email" required autocomplete="off" class="w-full p-3 mt-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:border-teal-500">
