@@ -24,7 +24,13 @@ $registered_events = $stmt->fetchAll();
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto p-10">
-        <h1 class="text-2xl font-bold mb-6">Your Registered Events</h1>
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">Your Registered Events</h1>
+            <!-- Logout Button -->
+            <a href="../index.php?page=logout" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Logout
+            </a>
+        </div>
         <div class="bg-white shadow-lg rounded-lg p-6">
             <h2 class="text-xl font-semibold mb-4">Events You Have Registered</h2>
             <table class="min-w-full bg-white border border-gray-300 rounded-lg">

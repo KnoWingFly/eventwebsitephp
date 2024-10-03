@@ -46,10 +46,11 @@ switch ($page) {
     case 'register':
         require 'user/register.php';
         break;
-    case 'logout':
-        session_destroy();
-        header('Location: index.php?page=login');
-        exit;
+        case 'logout':
+            session_destroy();
+            header('Location: index.php?page=login');
+            exit;
+        
     default:
         require 'user/login.php';
         break;
