@@ -34,8 +34,3 @@ CREATE TABLE registrations (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (event_id) REFERENCES events(id)
 );
-
-
-INSERT INTO users (id,name,email,password,role) VALUES(
-    1, 'Admin(admin123)', 'admin@example.com', 'admin123', 'admin'
-);
