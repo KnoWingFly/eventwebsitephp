@@ -18,12 +18,13 @@ CREATE TABLE events (
     description TEXT,
     location VARCHAR(255),
     event_date DATE,
-    event_time TIME,
+    event_time TIME,  
     max_participants INT,
-    banner VARCHAR(255),
+    banner VARCHAR(255) NULL,
     status ENUM('open', 'closed', 'canceled') DEFAULT 'open',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 -- Registrations table
 CREATE TABLE registrations (

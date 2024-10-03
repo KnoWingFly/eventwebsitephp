@@ -33,8 +33,17 @@ $events = $stmt->fetchAll();
                 Logout
             </a>
         </div>
+        
+        <!-- Button to Create New Event -->
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold">Events Overview</h2>
+            <a href="create_event.php" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                + Add New Event
+            </a>
+        </div>
+        
+        <!-- Events Table -->
         <div class="bg-white shadow-lg rounded-lg p-6">
-            <h2 class="text-xl font-semibold mb-4">Events Overview</h2>
             <table class="min-w-full bg-white border border-gray-300 rounded-lg">
                 <thead>
                     <tr>
@@ -51,8 +60,11 @@ $events = $stmt->fetchAll();
                         <td class="py-2 border-b"><?= htmlspecialchars($event['event_date']) ?></td>
                         <td class="py-2 border-b"><?= $event['registrants'] ?></td>
                         <td class="py-2 border-b">
-                            <a href="index.php?page=admin_events&id=<?= $event['id'] ?>" class="text-blue-500">Edit</a> |
-                            <a href="index.php?page=delete_event&id=<?= $event['id'] ?>" class="text-red-500">Delete</a>
+                            <!-- Edit Link -->
+                            <a href="edit_event.php?id=<?= $event['id'] ?>" class="text-blue-500">Edit</a> |
+                            
+                            <!-- Delete Link -->
+                            <a href="delete_event.php?id=<?= $event['id'] ?>" class="text-red-500" onclick="return confirm('Are you sure you want to delete this event?')">Delete</a>
                         </td>
                     </tr>
                     <?php endforeach; ?>

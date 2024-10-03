@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$name, $description, $location, $event_date, $event_time, $max_participants, $banner, $status]);
 
-    header('Location: index.php?page=admin_dashboard');
+    header('Location: index.php?page=admin/dashboard');
     exit;
 }
 ?>
