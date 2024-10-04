@@ -1,4 +1,5 @@
 <?php
+// admin/edit_event.php
 session_start();
 require '../config.php';
 
@@ -14,11 +15,10 @@ $stmt = $pdo->prepare("SELECT * FROM events WHERE id = ?");
 $stmt->execute([$event_id]);
 $event = $stmt->fetch();
 
-// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
     $event_date = $_POST['event_date'];
-    $event_time = $_POST['event_time']; 
+    $event_time = $_POST['event_time'];  // Fixed time key
     $location = $_POST['location'];
     $description = $_POST['description'];
     $max_participants = $_POST['max_participants'];
@@ -35,8 +35,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Update event data in the database
     $stmt = $pdo->prepare("UPDATE events SET name = ?, event_date = ?, event_time = ?, location = ?, description = ?, max_participants = ?, status = ?, banner = ? WHERE id = ?");
     $stmt->execute([$name, $event_date, $event_time, $location, $description, $max_participants, $status, $banner, $event_id]);
-    
-    // Redirect to admin dashboard after successful update
+
+    // If the event status is 'canceled', automatically remove all user registrations for that event
+    if ($status === 'canceled') {
+        $stmt_delete_registrations = $pdo->prepare("DELETE FROM registrations WHERE event_id = ?");
+        $stmt_delete_registrations->execute([$event_id]);
+    }
+
+    // Redirect back to admin dashboard
     header('Location: dashboard.php');
     exit;
 }
@@ -48,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Event</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script> 
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto p-10">

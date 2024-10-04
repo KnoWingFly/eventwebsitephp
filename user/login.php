@@ -107,6 +107,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label class="text-gray-400">Password<span class="text-red-500">*</span></label>
                     <input type="password" name="password" required autocomplete="off" class="w-full p-3 mt-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:border-teal-500">
                 </div>
+                <div class="mt-6 text-center">
+                    <a href="../user/forget_password.php" class="text-teal-500 hover:text-teal-700">Forgot Password?</a>
+                </div>
                 <button type="submit" class="mt-6 w-full py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600">Log In</button>
             </form>
         </div>

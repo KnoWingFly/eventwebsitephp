@@ -1,0 +1,57 @@
+//ADMIN:
+1. Admin Dashbord
+- Event tersedia (Done)
+- Jumlah Pendaftar (Done)
+- Akses Menu Event management dan user registration (X)
+
+2.  EventManagement:
+A. Create New Event:
+ o Admin dapat menambahkan event baru dengan detail seperti nama event, tanggal, waktu, lokasi, deskripsi dan jumlah maksimum partisipan (Done)
+ o Dapat melakukan upload gambar dan banner event (Done)
+
+B. Edit Event:
+ o Melakukan modifikasi detail event.(Done)
+ o Melakukan update jumlah maksimum slot atau mengganti event status (open,closed atau canceled) (Done)
+
+C. DeleteEvent:
+ o Menghapus event dari sistem (dengan konfirmasi untuk mencegah penghapusan yang tidak disengaja) (DONE)
+
+ 3. View Event Registrations
+A. ListofRegistrants:
+ o Admindapatmelihatlist dari user yang mendaftar pada satu event (X)
+ o Exportlist pendaftar ke dalam CSV file/Excel (X)
+
+ 4. User Management:
+  A.ViewUsers:
+ o Admin dapat melihat seluruh user yang sudah melakukan registrasi dan melihat (X)
+ event mana saja yang pernah terdaftar oleh user.
+  B.ManageUsers:
+ o Deleteuseraccounts (X)
+
+
+//USERS:
+1.  UserRegistration & Authentication:
+ A. SignUp:
+ o User dapat membuat akun dengan melakukan input seperti nama, email dan password. (Done)
+ B. Login/Logout:
+ o Userdapatlogin dengan email dan password dan log out secara aman (Done)
+
+2. Event Browsing:
+ A. ViewAvailable Events:
+ o Userdapatmelihat Event yang akandatang. (Done)
+ B. EventDetails:
+ o Ketika melakukan klik ke satu Event, informasi lebih detail akan tertampil. Seperti deskripsi, schedule, dan lokasi (Done)
+
+3. Event Registration:
+ A. Register for event:
+    o User dapat melakukan pendaftaran Event dengan meng-kliktombol“Register”pada Event Detail Page (Done)
+ B.  ViewRegisteredEvents:
+ o User dapat melihat list dari event yang sudah terdaftar beserta dengan detail dari event event-nya(eventdetails) (Done, tinggal dipisah)
+ C. CancelRegistration:
+ o User dapat melakukan cancel terhadap event yang sudah terdaftar (dengan konfirmasi) (DONE)
+
+4. UserProfileManagement:
+ A. ViewProfile:
+ o User dapatmelihat informasi profilmereka, termasuk nama, email dan histori registrasievent. (X)
+ B. EditProfile:
+ o User dapatmelakukanupdate terhadapdatapersonal seperti nama, email dan password (X)

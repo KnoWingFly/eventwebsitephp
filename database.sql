@@ -35,3 +35,5 @@ CREATE TABLE registrations (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (event_id) REFERENCES events(id)
 );
+
+ALTER TABLE users ADD reset_token VARCHAR(255) NULL, ADD reset_token_expiry DATETIME NULL;
