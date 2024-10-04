@@ -1,9 +1,7 @@
 <?php
-// admin/create_event.php
 session_start();
 require '../config.php';
 
-// Check if admin is logged in
 if ($_SESSION['role'] != 'admin') {
     header('Location: ../index.php?page=login');
     exit;
@@ -11,38 +9,32 @@ if ($_SESSION['role'] != 'admin') {
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Collect form data
     $name = $_POST['name'];
     $event_date = $_POST['event_date'];
-    $event_time = $_POST['event_time']; // Added for event_time
+    $event_time = $_POST['event_time'];
     $location = $_POST['location'];
     $description = $_POST['description'];
     $max_participants = $_POST['max_participants'];
-    $status = $_POST['status']; // Collect event status
+    $status = $_POST['status'];
 
-    // Image file handling (Optional Upload)
     if (!empty($_FILES['banner']['name'])) {
         $banner = $_FILES['banner']['name'];
         $target_dir = "../uploads/";
         $target_file = $target_dir . basename($banner);
 
-        // Move uploaded file
         if (!move_uploaded_file($_FILES['banner']['tmp_name'], $target_file)) {
             $error = 'Error uploading the banner image.';
         }
     } else {
-        // If no image provided, set banner to NULL
         $banner = null;
     }
 
-    // Insert event data into the database
     if (!$error) {
         try {
             $stmt = $pdo->prepare("INSERT INTO events (name, event_date, event_time, location, description, max_participants, banner, status) 
                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([$name, $event_date, $event_time, $location, $description, $max_participants, $banner, $status]);
 
-            // Redirect to admin dashboard after successful event creation
             header('Location: dashboard.php');
             exit;
         } catch (PDOException $e) {

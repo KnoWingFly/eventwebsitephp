@@ -1,5 +1,4 @@
 <?php
-// admin/edit_event.php
 session_start();
 require '../config.php';
 
@@ -19,7 +18,7 @@ $event = $stmt->fetch();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
     $event_date = $_POST['event_date'];
-    $event_time = $_POST['event_time'];  // Use correct key
+    $event_time = $_POST['event_time']; 
     $location = $_POST['location'];
     $description = $_POST['description'];
     $max_participants = $_POST['max_participants'];
@@ -97,7 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-4">
                 <label class="block">Event Image</label>
                 <input type="file" name="image" accept="image/*" class="w-full p-2 border">
-                <!-- Show the existing image -->
                 <?php if ($event['banner']): ?>
                     <img src="../uploads/<?= htmlspecialchars($event['banner']) ?>" alt="Event Image" class="mt-4 w-32 h-32">
                 <?php endif; ?>

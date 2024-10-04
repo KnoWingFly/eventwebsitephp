@@ -13,7 +13,6 @@ $sheet->setCellValue('A1', 'Name');
 $sheet->setCellValue('B1', 'Email');
 $sheet->setCellValue('C1', 'Registered At');
 
-// Fetch registrants from database
 $stmt = $pdo->prepare("SELECT users.name, users.email, registrations.registered_at FROM registrations 
                       JOIN users ON registrations.user_id = users.id WHERE event_id = ?");
 $stmt->execute([$_GET['event_id']]);
@@ -27,7 +26,6 @@ foreach ($registrants as $registrant) {
     $row++;
 }
 
-// Download the file
 $writer = new Xlsx($spreadsheet);
 header('Content-Type: application/vnd.ms-excel');
 header('Content-Disposition: attachment;filename="event_registrants.xlsx"');

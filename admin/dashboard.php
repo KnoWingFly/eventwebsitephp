@@ -1,15 +1,12 @@
 <?php
-// admin/dashboard.php
 session_start();
 require '../config.php';
 
-// Check if the admin is logged in
 if ($_SESSION['role'] != 'admin') {
     header('Location: ../index.php?page=login');
     exit;
 }
 
-// Fetch all events with registrants count
 $stmt = $pdo->query("SELECT events.*, COUNT(registrations.id) as registrants 
                      FROM events 
                      LEFT JOIN registrations ON events.id = registrations.event_id 

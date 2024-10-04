@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Confirm deletion
     $stmt = $pdo->prepare("DELETE FROM events WHERE id = ?");
     $stmt->execute([$event_id]);
-    header('Location: dashboard.php');  // Updated
+    header('Location: dashboard.php'); 
     exit;
 }
 ?>
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p>Are you sure you want to delete the event: <strong><?= htmlspecialchars($event['name']) ?></strong>?</p>
         <form action="" method="post">
             <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded">Yes, Delete</button>
-            <a href="dashboard.php" class="bg-gray-500 text-white py-2 px-4 rounded">Cancel</a> <!-- Updated -->
+            <a href="dashboard.php" class="bg-gray-500 text-white py-2 px-4 rounded">Cancel</a>
         </form>
     </div>
 </body>

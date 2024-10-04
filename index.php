@@ -1,8 +1,7 @@
 <?php
-// index.php - main routing file
 session_start();
 require_once 'config.php';
-require_once 'auth.php'; // Handles login authentication checks
+require_once 'auth.php'; 
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'login';
 
@@ -16,6 +15,7 @@ switch ($page) {
             exit;
         }
         break;
+        
     case 'admin_events':
         if (isAdmin()) {
             require 'admin/events.php';
@@ -24,6 +24,7 @@ switch ($page) {
             exit;
         }
         break;
+
     case 'user_dashboard':
         if (isLoggedIn()) {
             require 'user/dashboard.php';
@@ -32,6 +33,7 @@ switch ($page) {
             exit;
         }
         break;
+
     case 'event_details':
         if (isLoggedIn()) {
             require 'user/event_details.php';
@@ -40,9 +42,11 @@ switch ($page) {
             exit;
         }
         break;
+
     case 'login':
         require 'user/login.php';
         break;
+
     case 'register':
         require 'user/register.php';
         break;

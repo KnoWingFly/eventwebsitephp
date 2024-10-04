@@ -1,11 +1,9 @@
 <?php
-// user/dashboard.php
 session_start();
 require '../config.php';
 
 $user_id = $_SESSION['user_id'];
 
-// Fetch registered events for the user
 $stmt = $pdo->prepare("SELECT events.* FROM registrations 
                        JOIN events ON registrations.event_id = events.id 
                        WHERE registrations.user_id = ?");

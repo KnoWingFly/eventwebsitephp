@@ -1,5 +1,4 @@
 <?php
-// admin/events.php
 require '../config.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -11,11 +10,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $max_participants = $_POST['max_participants'];
     $status = $_POST['status'];
 
-    // Handle image upload
     $banner = $_FILES['banner']['name'];
     move_uploaded_file($_FILES['banner']['tmp_name'], '../uploads/' . $banner);
 
-    // Insert event into database
     $stmt = $pdo->prepare("INSERT INTO events (name, description, location, event_date, event_time, max_participants, banner, status) 
                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$name, $description, $location, $event_date, $event_time, $max_participants, $banner, $status]);

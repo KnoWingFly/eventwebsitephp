@@ -1,5 +1,4 @@
 <?php
-// user/login.php
 require __DIR__ . '/../config.php';
 $error = '';
 
@@ -39,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($stmt->fetch()) {
                 $error = "Email already exists!";
             } else {
-                // Insert new user
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 $stmt = $pdo->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'user')");
                 if ($stmt->execute([$name, $email, $hashed_password])) {
