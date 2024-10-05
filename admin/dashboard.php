@@ -58,7 +58,8 @@ $events = $stmt->fetchAll();
             <h2 class="text-xl font-semibold mb-4">Admin Menu</h2>
             <ul class="space-y-2">
                 <li><a href="create_event.php" class="text-blue-500 hover:underline">Event Management</a></li>
-                <li><a href="views_user.php" class="text-blue-500 hover:underline">User Management</a></li>
+                <li><a href="views_user.php" class="text-blue-500 hover:underline">User Views</a></li>
+                <li><a href="manage_user.php" class="text-blue-500 hover:underline">User Management</a></li>
             </ul>
         </div>
 
