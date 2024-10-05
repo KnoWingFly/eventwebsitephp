@@ -2,7 +2,7 @@
 1. Admin Dashbord
 - Event tersedia (Done)
 - Jumlah Pendaftar (Done)
-- Akses Menu Event management dan user registration (X)
+- Akses Menu Event management dan user registration (X)  
 
 2.  EventManagement:
 A. Create New Event:
@@ -18,8 +18,8 @@ C. DeleteEvent:
 
  3. View Event Registrations
 A. ListofRegistrants:
- o Admindapatmelihatlist dari user yang mendaftar pada satu event (X)
- o Exportlist pendaftar ke dalam CSV file/Excel (X)
+ o Admindapatmelihatlist dari user yang mendaftar pada satu event (Done)
+ o Exportlist pendaftar ke dalam CSV file/Excel (Done)
 
  4. User Management:
   A.ViewUsers:
@@ -52,6 +52,6 @@ A. ListofRegistrants:
 
 4. UserProfileManagement:
  A. ViewProfile:
- o User dapatmelihat informasi profilmereka, termasuk nama, email dan histori registrasievent. (X)
+ o User dapatmelihat informasi profilmereka, termasuk nama, email dan histori registrasievent. (Done)
  B. EditProfile:
- o User dapatmelakukanupdate terhadapdatapersonal seperti nama, email dan password (X)
+ o User dapatmelakukanupdate terhadapdatapersonal seperti nama, email dan password (Done)

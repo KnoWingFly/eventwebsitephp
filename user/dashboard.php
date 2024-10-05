@@ -8,6 +8,12 @@ $user_id = $_SESSION['user_id'];
 $stmt_all_events = $pdo->query("SELECT * FROM events");
 $all_events = $stmt_all_events->fetchAll();
 
+$closestatus = $pdo->prepare("
+    UPDATE events 
+    SET status = 'closed' 
+    WHERE status = 'open' 
+    AND TIMESTAMPDIFF(MINUTE, CONCAT(event_date, ' ', event_time), NOW()) >= 1
+");
 // Fetch registered events for the user
 $stmt_registered_events = $pdo->prepare("SELECT event_id FROM registrations WHERE user_id = ?");
 $stmt_registered_events->execute([$user_id]);
@@ -34,7 +40,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0); //
             </div>
             <div class="space-x-6">
                 <a href="dashboard.php" class="hover:underline">Home</a>
-                <a href="dashboard.php" class="hover:underline">Registered Events</a>
+                <a href="profile.php" class="hover:underline``">View Profile</a>
             </div>
             <a href="../index.php?page=logout" class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg">Logout</a>
         </div>
@@ -143,6 +149,50 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0); //
     <script>
         $(document).ready(function() {
             let selectedEventId = null;
+
+              // Search bar functionality
+        $('#search-bar').on('input', function() {
+            let query = $(this).val();
+
+            // If query is empty, send an empty request to fetch all events
+            $.ajax({
+                url: 'search_events.php',
+                method: 'GET',
+                data: { query: query },
+                success: function(response) {
+                    let events = JSON.parse(response);
+                    let eventRows = '';
+
+                    // Iterate over events and dynamically update the table rows
+                    if (events.length > 0) {
+                        events.forEach(function(event) {
+                            eventRows += `
+                                <tr>
+                                    <td class="py-2 border-b">${event.name}</td>
+                                    <td class="py-2 border-b">${event.event_date}</td>
+                                    <td class="py-2 border-b">${event.location}</td>
+                                    <td class="py-2 border-b">
+                                        ${event.status === 'canceled' ? '<span class="text-red-500">Canceled</span>' : (event.status === 'closed' ? '<span class="text-gray-500">Closed</span>' : '<span class="text-green-500">Open</span>')}
+                                    </td>
+                                    <td class="py-2 border-b">
+                                        <button class="text-blue-500 view-details-btn" data-event-id="${event.id}">View Details</button>
+                                        ${event.status === 'open' ? '<button class="text-blue-500 register-btn" data-event-id="'+ event.id +'">Register</button>' : '<span class="text-gray-500">Registration Closed</span>'}
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        eventRows = '<tr><td colspan="5" class="text-center py-2">No events found</td></tr>';
+                    }
+
+                    // Replace the event table body with new rows
+                    $('tbody').html(eventRows);
+                },
+                error: function() {
+                    alert('Error fetching events.');
+                }
+            });
+        });
 
             // Handle View Details button click
             $('.view-details-btn').on('click', function() {
