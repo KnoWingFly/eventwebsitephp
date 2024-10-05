@@ -1,46 +1,55 @@
 <?php
 session_start();
-require '../config.php';
+require "../config.php";
 
-if ($_SESSION['role'] != 'admin') {
-    header('Location: ../index.php?page=login');
-    exit;
+if ($_SESSION["role"] != "admin") {
+	header("Location: ../index.php?page=login");
+	exit();
 }
 
-$error = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['name'];
-    $event_date = $_POST['event_date'];
-    $event_time = $_POST['event_time'];
-    $location = $_POST['location'];
-    $description = $_POST['description'];
-    $max_participants = $_POST['max_participants'];
-    $status = $_POST['status'];
+$error = "";
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+	$name = $_POST["name"];
+	$event_date = $_POST["event_date"];
+	$event_time = $_POST["event_time"];
+	$location = $_POST["location"];
+	$description = $_POST["description"];
+	$max_participants = $_POST["max_participants"];
+	$status = $_POST["status"];
 
-    if (!empty($_FILES['banner']['name'])) {
-        $banner = $_FILES['banner']['name'];
-        $target_dir = "../uploads/";
-        $target_file = $target_dir . basename($banner);
+	if (!empty($_FILES["banner"]["name"])) {
+		$banner = $_FILES["banner"]["name"];
+		$target_dir = "../uploads/";
+		$target_file = $target_dir . basename($banner);
 
-        if (!move_uploaded_file($_FILES['banner']['tmp_name'], $target_file)) {
-            $error = 'Error uploading the banner image.';
-        }
-    } else {
-        $banner = null;
-    }
+		if (!move_uploaded_file($_FILES["banner"]["tmp_name"], $target_file)) {
+			$error = "Error uploading the banner image.";
+		}
+	} else {
+		$banner = null;
+	}
 
-    if (!$error) {
-        try {
-            $stmt = $pdo->prepare("INSERT INTO events (name, event_date, event_time, location, description, max_participants, banner, status) 
+	if (!$error) {
+		try {
+			$stmt = $pdo->prepare("INSERT INTO events (name, event_date, event_time, location, description, max_participants, banner, status) 
                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$name, $event_date, $event_time, $location, $description, $max_participants, $banner, $status]);
+			$stmt->execute([
+				$name,
+				$event_date,
+				$event_time,
+				$location,
+				$description,
+				$max_participants,
+				$banner,
+				$status,
+			]);
 
-            header('Location: dashboard.php');
-            exit;
-        } catch (PDOException $e) {
-            $error = 'Error: ' . $e->getMessage();
-        }
-    }
+			header("Location: dashboard.php");
+			exit();
+		} catch (PDOException $e) {
+			$error = "Error: " . $e->getMessage();
+		}
+	}
 }
 ?>
 
@@ -50,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create New Event</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="../css/output.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto p-10">

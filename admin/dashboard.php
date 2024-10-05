@@ -1,14 +1,12 @@
 <?php
 session_start();
-require '../config.php';
+require "../config.php";
 
-// Check if the admin is logged in
-if ($_SESSION['role'] != 'admin') {
-    header('Location: ../index.php?page=login');
-    exit;
+if ($_SESSION["role"] != "admin") {
+	header("Location: ../index.php?page=login");
+	exit();
 }
 
-// Fetch all events with registrants count
 $stmt = $pdo->query("
     SELECT events.*, COUNT(registrations.id) as registrants 
     FROM events 
@@ -32,7 +30,6 @@ $closestatus = $pdo->prepare("
 ");
 $closestatus->execute();
 
-
 $events = $stmt->fetchAll();
 ?>
 
@@ -42,7 +39,7 @@ $events = $stmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="../css/output.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto p-10">
@@ -53,7 +50,6 @@ $events = $stmt->fetchAll();
             </a>
         </div>
         
-        <!-- Admin Menu -->
         <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Admin Menu</h2>
             <ul class="space-y-2">
@@ -63,7 +59,6 @@ $events = $stmt->fetchAll();
             </ul>
         </div>
 
-        <!-- Events Overview -->
         <div class="bg-white shadow-lg rounded-lg p-6">
             <h2 class="text-xl font-semibold mb-4">Events Overview</h2>
             <table class="min-w-full bg-white border border-gray-300 rounded-lg">
@@ -78,13 +73,27 @@ $events = $stmt->fetchAll();
                 <tbody>
                     <?php foreach ($events as $event): ?>
                     <tr>
-                        <td class="py-2 border-b"><?= htmlspecialchars($event['name']) ?></td>
-                        <td class="py-2 border-b"><?= htmlspecialchars($event['event_date']) ?></td>
-                        <td class="py-2 border-b"><?= htmlspecialchars($event['registrants']) ?> / <?= htmlspecialchars($event['max_participants']) ?></td>
+                        <td class="py-2 border-b"><?= htmlspecialchars(
+                        	$event["name"],
+                        ) ?></td>
+                        <td class="py-2 border-b"><?= htmlspecialchars(
+                        	$event["event_date"],
+                        ) ?></td>
+                        <td class="py-2 border-b"><?= htmlspecialchars(
+                        	$event["registrants"],
+                        ) ?> / <?= htmlspecialchars(
+ 	$event["max_participants"],
+ ) ?></td>
                         <td class="py-2 border-b">
-                            <a href="registrants.php?event_id=<?= $event['id'] ?>" class="text-blue-500">View Registrants</a> |
-                            <a href="edit_event.php?id=<?= $event['id'] ?>" class="text-blue-500">Edit</a> |
-                            <a href="delete_event.php?id=<?= $event['id'] ?>" class="text-red-500" onclick="return confirm('Are you sure you want to delete this event?')">Delete</a>
+                            <a href="registrants.php?event_id=<?= $event[
+                            	"id"
+                            ] ?>" class="text-blue-500">View Registrants</a> |
+                            <a href="edit_event.php?id=<?= $event[
+                            	"id"
+                            ] ?>" class="text-blue-500">Edit</a> |
+                            <a href="delete_event.php?id=<?= $event[
+                            	"id"
+                            ] ?>" class="text-red-500" onclick="return confirm('Are you sure you want to delete this event?')">Delete</a>
                         </td>
                     </tr>
                     <?php endforeach; ?>

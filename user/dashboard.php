@@ -1,10 +1,9 @@
 <?php
 session_start();
-require '../config.php';
+require "../config.php";
 
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION["user_id"];
 
-// Fetch all events
 $stmt_all_events = $pdo->query("SELECT * FROM events");
 $all_events = $stmt_all_events->fetchAll();
 
@@ -14,11 +13,11 @@ $closestatus = $pdo->prepare("
     WHERE status = 'open' 
     AND TIMESTAMPDIFF(MINUTE, CONCAT(event_date, ' ', event_time), NOW()) >= 1
 ");
-// Fetch registered events for the user
-$stmt_registered_events = $pdo->prepare("SELECT event_id FROM registrations WHERE user_id = ?");
+$stmt_registered_events = $pdo->prepare(
+	"SELECT event_id FROM registrations WHERE user_id = ?",
+);
 $stmt_registered_events->execute([$user_id]);
-$registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0); // Fetch event IDs only
-
+$registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
 ?>
 
 <!DOCTYPE html>
@@ -27,7 +26,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0); //
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="../css/output.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body class="bg-gray-100">
@@ -62,13 +61,19 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0); //
             <tbody>
                 <?php foreach ($all_events as $event): ?>
                 <tr>
-                    <td class="py-2 border-b"><?= htmlspecialchars($event['name']) ?></td>
-                    <td class="py-2 border-b"><?= htmlspecialchars($event['event_date']) ?></td>
-                    <td class="py-2 border-b"><?= htmlspecialchars($event['location']) ?></td>
+                    <td class="py-2 border-b"><?= htmlspecialchars(
+                    	$event["name"],
+                    ) ?></td>
+                    <td class="py-2 border-b"><?= htmlspecialchars(
+                    	$event["event_date"],
+                    ) ?></td>
+                    <td class="py-2 border-b"><?= htmlspecialchars(
+                    	$event["location"],
+                    ) ?></td>
                     <td class="py-2 border-b">
-                        <?php if ($event['status'] === 'canceled'): ?>
+                        <?php if ($event["status"] === "canceled"): ?>
                             <span class="text-red-500">Canceled</span>
-                        <?php elseif ($event['status'] === 'closed'): ?>
+                        <?php elseif ($event["status"] === "closed"): ?>
                             <span class="text-gray-500">Closed</span>
                         <?php else: ?>
                             <span class="text-green-500">Open</span>
@@ -76,12 +81,20 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0); //
                     </td>
                     <td class="py-2 border-b">
                         <!-- View Details Button -->
-                        <button class="text-blue-500 view-details-btn" data-event-id="<?= $event['id'] ?>">View Details</button>
-                        <?php if (in_array($event['id'], $registered_events)): ?>
+                        <button class="text-blue-500 view-details-btn" data-event-id="<?= $event[
+                        	"id"
+                        ] ?>">View Details</button>
+                        <?php if (
+                        	in_array($event["id"], $registered_events)
+                        ): ?>
                             <span class="text-green-500 font-bold">Registered</span> |
-                            <button class="text-red-500 cancel-btn" data-event-id="<?= $event['id'] ?>">Cancel Registration</button>
-                        <?php elseif ($event['status'] === 'open'): ?>
-                            <button class="text-blue-500 register-btn" data-event-id="<?= $event['id'] ?>">Register</button>
+                            <button class="text-red-500 cancel-btn" data-event-id="<?= $event[
+                            	"id"
+                            ] ?>">Cancel Registration</button>
+                        <?php elseif ($event["status"] === "open"): ?>
+                            <button class="text-blue-500 register-btn" data-event-id="<?= $event[
+                            	"id"
+                            ] ?>">Register</button>
                         <?php else: ?>
                             <span class="text-gray-500">Registration Closed</span>
                         <?php endif; ?>
@@ -289,7 +302,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0); //
             // Close success modal and reload page
             $('#closeSuccessModal').on('click', function() {
                 $('#successModal').addClass('hidden');
-                location.reload(); // Reload page to update registration status
+                location.reload();
             });
         });
     </script>

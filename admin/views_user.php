@@ -1,11 +1,8 @@
 <?php
-// Include database connection and utility functions
 include('../config.php');
 
-// Fetch users and events from the database using PDO
 $search = isset($_POST['search']) ? trim($_POST['search']) : '';
 
-// Prepare the base query
 $query = "
     SELECT 
         events.*,
@@ -14,7 +11,6 @@ $query = "
     FROM events
 ";
 
-// If search is not empty, modify the query
 if (!empty($search)) {
     if (DateTime::createFromFormat('Y-m-d', $search)) {
         $query .= " WHERE event_date = :search_date";
@@ -27,7 +23,6 @@ if (!empty($search)) {
     $params = [];
 }
 
-// Prepare and execute the query
 $eventsQuery = $pdo->prepare($query);
 $eventsQuery->execute($params);
 
@@ -119,7 +114,7 @@ $events = $eventsQuery->fetchAll(PDO::FETCH_ASSOC);
 
                 let participants = data.participants;
                 let participantList = document.getElementById('participant-list');
-                participantList.innerHTML = ''; // Clear previous content
+                participantList.innerHTML = '';
                 participants.forEach(function(participant) {
                     let li = document.createElement('li');
                     li.innerText = `${participant.name} (${participant.email})`;

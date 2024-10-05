@@ -9,13 +9,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirm_password = $_POST['confirm_password'];
 
     if ($new_password === $confirm_password) {
-        // Validate token and expiry
         $stmt = $pdo->prepare("SELECT * FROM users WHERE reset_token = ? AND reset_token_expiry > NOW()");
         $stmt->execute([$token]);
         $user = $stmt->fetch();
 
         if ($user) {
-            // Update the user's password
             $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
             $stmt = $pdo->prepare("UPDATE users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = ?");
             if ($stmt->execute([$hashed_password, $token])) {
@@ -38,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="../css/output.css" rel="stylesheet">
 </head>
 <body class="bg-gray-300 font-sans">
 <div class="max-w-lg mx-auto mt-10 bg-gray-800 rounded-lg shadow-lg">

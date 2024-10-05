@@ -1,56 +1,57 @@
 <?php
-require __DIR__ . '/../config.php';
-require '../vendor/autoload.php';
+require __DIR__ . "/../config.php";
+require "../vendor/autoload.php";
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-$error = '';
-$success = '';
+$error = "";
+$success = "";
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'];
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+	$email = $_POST["email"];
 
-    // Check if email exists
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-    $stmt->execute([$email]);
-    $user = $stmt->fetch();
+	$stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+	$stmt->execute([$email]);
+	$user = $stmt->fetch();
 
-    if ($user) {
-        // Generate a token and store it in the database
-        $token = bin2hex(random_bytes(50));  
-        $stmt = $pdo->prepare("UPDATE users SET reset_token = ?, reset_token_expiry = DATE_ADD(NOW(), INTERVAL 1 HOUR) WHERE email = ?");
-        $stmt->execute([$token, $email]);
+	if ($user) {
+		$token = bin2hex(random_bytes(50));
+		$stmt = $pdo->prepare(
+			"UPDATE users SET reset_token = ?, reset_token_expiry = DATE_ADD(NOW(), INTERVAL 1 HOUR) WHERE email = ?",
+		);
+		$stmt->execute([$token, $email]);
 
-        $reset_link = "http://localhost:8000/user/reset_password.php?token=" . $token;
+		$reset_link =
+			"http://localhost:8000/user/reset_password.php?token=" . $token;
 
-        $mail = new PHPMailer(true);
+		$mail = new PHPMailer(true);
 
-        try {
-            $mail->isSMTP();                                         
-            $mail->Host       = 'smtp.gmail.com';                    
-            $mail->SMTPAuth   = true;                              
-            $mail->Username   = 'unknownowl26@gmail.com';            
-            $mail->Password   = 'dbst pvbk dasu xmmb';                  
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;        
-            $mail->Port       = 587;                                   
+		try {
+			$mail->isSMTP();
+			$mail->Host = "smtp.gmail.com";
+			$mail->SMTPAuth = true;
+			$mail->Username = "unknownowl26@gmail.com";
+			$mail->Password = "dbst pvbk dasu xmmb";
+			$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+			$mail->Port = 587;
 
-            //Recipients
-            $mail->setFrom('your-email@gmail.com', 'Event Website');
-            $mail->addAddress($email);                                
+			//Recipients
+			$mail->setFrom("your-email@gmail.com", "Event Website");
+			$mail->addAddress($email);
 
-            // Content
-            $mail->isHTML(true);                              
-            $mail->Subject = 'Password Reset Request';
-            $mail->Body    = "Click the following link to reset your password: <a href='$reset_link'>$reset_link</a>";
+			// Content
+			$mail->isHTML(true);
+			$mail->Subject = "Password Reset Request";
+			$mail->Body = "Click the following link to reset your password: <a href='$reset_link'>$reset_link</a>";
 
-            $mail->send();
-            $success = "A password reset link has been sent to your email.";
-        } catch (Exception $e) {
-            $error = "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-        }
-    } else {
-        $error = "Email not found!";
-    }
+			$mail->send();
+			$success = "A password reset link has been sent to your email.";
+		} catch (Exception $e) {
+			$error = "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+		}
+	} else {
+		$error = "Email not found!";
+	}
 }
 ?>
 
@@ -60,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="../css/output.css" rel="stylesheet">
 </head>
 <body class="bg-gray-300 font-sans">
 <div class="max-w-lg mx-auto mt-10 bg-gray-800 rounded-lg shadow-lg">
@@ -75,9 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
 
         <?php if ($error): ?>
-            <p class="mt-4 text-red-500 text-center"><?= $error; ?></p>
+            <p class="mt-4 text-red-500 text-center"><?= $error ?></p>
         <?php elseif ($success): ?>
-            <p class="mt-4 text-green-500 text-center"><?= $success; ?></p>
+            <p class="mt-4 text-green-500 text-center"><?= $success ?></p>
         <?php endif; ?>
     </div>
 </div>

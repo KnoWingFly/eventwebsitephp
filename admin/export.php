@@ -1,5 +1,4 @@
 <?php
-// admin/export.php
 
 require 'vendor/autoload.php';
 

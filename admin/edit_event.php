@@ -1,5 +1,4 @@
 <?php
-// admin/edit_event.php
 session_start();
 require '../config.php';
 
@@ -10,7 +9,6 @@ if ($_SESSION['role'] != 'admin') {
 
 $event_id = $_GET['id'];
 
-// Fetch event details
 $stmt = $pdo->prepare("SELECT * FROM events WHERE id = ?");
 $stmt->execute([$event_id]);
 $event = $stmt->fetch();
@@ -18,31 +16,27 @@ $event = $stmt->fetch();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
     $event_date = $_POST['event_date'];
-    $event_time = $_POST['event_time'];  // Fixed time key
+    $event_time = $_POST['event_time'];
     $location = $_POST['location'];
     $description = $_POST['description'];
     $max_participants = $_POST['max_participants'];
     $status = $_POST['status'];
 
-    // Handle image update if new image is uploaded
-    $banner = $event['banner']; // Keep the old image by default
+    $banner = $event['banner'];
     if (!empty($_FILES['image']['name'])) {
         $banner = $_FILES['image']['name'];
         $target = "../uploads/" . basename($banner);
         move_uploaded_file($_FILES['image']['tmp_name'], $target);
     }
 
-    // Update event data in the database
     $stmt = $pdo->prepare("UPDATE events SET name = ?, event_date = ?, event_time = ?, location = ?, description = ?, max_participants = ?, status = ?, banner = ? WHERE id = ?");
     $stmt->execute([$name, $event_date, $event_time, $location, $description, $max_participants, $status, $banner, $event_id]);
 
-    // If the event status is 'canceled', automatically remove all user registrations for that event
     if ($status === 'canceled') {
         $stmt_delete_registrations = $pdo->prepare("DELETE FROM registrations WHERE event_id = ?");
         $stmt_delete_registrations->execute([$event_id]);
     }
 
-    // Redirect back to admin dashboard
     header('Location: dashboard.php');
     exit;
 }
@@ -54,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Event</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="../css/output.css" rel="stylesheet">
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const statusSelect = document.querySelector('select[name="status"]');
@@ -62,25 +56,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const now = new Date();
             const originalStatus = "<?= $event['status'] ?>";
 
-            // Check if event is in the past
             const isEventPassed = eventDate < now;
 
             statusSelect.addEventListener('change', function (e) {
                 if (isEventPassed && this.value === 'open') {
                     e.preventDefault();
-                    // Show the modal
                     document.getElementById('modal').classList.remove('hidden');
-                    // Reset the select to its original value
                     this.value = originalStatus;
                 }
             });
 
-            // Handle modal confirmation (in this case, just close the modal)
             document.getElementById('confirm').addEventListener('click', function () {
                 document.getElementById('modal').classList.add('hidden');
             });
 
-            // Handle modal cancellation (same as confirmation in this case)
             document.getElementById('cancel').addEventListener('click', function () {
                 document.getElementById('modal').classList.add('hidden');
             });

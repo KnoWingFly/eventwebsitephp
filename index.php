@@ -1,7 +1,6 @@
 <?php
 session_start();
 require_once 'config.php';
-require_once 'auth.php'; 
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'login';
 

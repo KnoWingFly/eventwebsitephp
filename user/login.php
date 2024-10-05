@@ -1,56 +1,56 @@
 <?php
-require __DIR__ . '/../config.php';
-$error = '';
+require __DIR__ . "/../config.php";
+$error = "";
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['action'])) {
-        if ($_POST['action'] === 'login') {
-            $email = $_POST['email'];
-            $password = $_POST['password'];
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+	if (isset($_POST["action"])) {
+		if ($_POST["action"] === "login") {
+			$email = $_POST["email"];
+			$password = $_POST["password"];
 
-            // Check user credentials
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-            $stmt->execute([$email]);
-            $user = $stmt->fetch();
+			$stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+			$stmt->execute([$email]);
+			$user = $stmt->fetch();
 
-            if ($user && password_verify($password, $user['password'])) {
-                // Login successful
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['role'] = $user['role'];
+			if ($user && password_verify($password, $user["password"])) {
+				$_SESSION["user_id"] = $user["id"];
+				$_SESSION["role"] = $user["role"];
 
-                if ($user['role'] == 'admin') {
-                    header('Location: /admin/dashboard.php');
-                } else {
-                    header('Location: /user/dashboard.php');
-                }
-                exit;
-            } else {
-                $error = "Invalid credentials!";
-            }
-        } elseif ($_POST['action'] === 'signup') {
-            $name = $_POST['name'];
-            $email = $_POST['email'];
-            $password = $_POST['password'];
+				if ($user["role"] == "admin") {
+					header("Location: /admin/dashboard.php");
+				} else {
+					header("Location: /user/dashboard.php");
+				}
+				exit();
+			} else {
+				$error = "Invalid credentials!";
+			}
+		} elseif ($_POST["action"] === "signup") {
+			$name = $_POST["name"];
+			$email = $_POST["email"];
+			$password = $_POST["password"];
 
-            // Check if email already exists
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-            $stmt->execute([$email]);
-            if ($stmt->fetch()) {
-                $error = "Email already exists!";
-            } else {
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'user')");
-                if ($stmt->execute([$name, $email, $hashed_password])) {
-                    $_SESSION['user_id'] = $pdo->lastInsertId();
-                    $_SESSION['role'] = 'user';
-                    header('Location: /user/dashboard.php');
-                    exit;
-                } else {
-                    $error = "Sign up failed!";
-                }
-            }
-        }
-    }
+			// Check if email already exists
+			$stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+			$stmt->execute([$email]);
+			if ($stmt->fetch()) {
+				$error = "Email already exists!";
+			} else {
+				$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+				$stmt = $pdo->prepare(
+					"INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'user')",
+				);
+				if ($stmt->execute([$name, $email, $hashed_password])) {
+					$_SESSION["user_id"] = $pdo->lastInsertId();
+					$_SESSION["role"] = "user";
+					header("Location: /user/dashboard.php");
+					exit();
+				} else {
+					$error = "Sign up failed!";
+				}
+			}
+		}
+	}
 }
 ?>
 
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up & Log In</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="../css/output.css" rel="stylesheet">
 </head>
 <body class="bg-gray-300 font-sans">
 

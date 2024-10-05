@@ -2,13 +2,11 @@
 session_start();
 require '../config.php';
 
-// Check if the admin is logged in
 if ($_SESSION['role'] != 'admin') {
     header('Location: ../index.php?page=login');
     exit;
 }
 
-// Fetch all users
 $stmt = $pdo->query("SELECT id, name, email, role FROM users");
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -19,7 +17,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="../css/output.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto p-10">
@@ -30,7 +28,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </a>
         </div>
 
-        <!-- Users Table -->
         <div class="bg-white shadow-lg rounded-lg p-6">
             <h2 class="text-xl font-semibold mb-4">All Users</h2>
             <table class="min-w-full bg-white border border-gray-300 rounded-lg">
