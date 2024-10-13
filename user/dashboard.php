@@ -14,7 +14,7 @@ $closestatus = $pdo->prepare("
     AND TIMESTAMPDIFF(MINUTE, CONCAT(event_date, ' ', event_time), NOW()) >= 1
 ");
 $stmt_registered_events = $pdo->prepare(
-	"SELECT event_id FROM registrations WHERE user_id = ?",
+    "SELECT event_id FROM registrations WHERE user_id = ?",
 );
 $stmt_registered_events->execute([$user_id]);
 $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
@@ -29,90 +29,66 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
     <link href="../css/output.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body class="bg-gray-100">
-    <!-- Navbar -->
-    <nav class="bg-blue-600 text-white px-4 py-3 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
-            <a href="dashboard.php" class="text-2xl font-bold">Event System</a>
-            <div class="w-1/3">
-                <input id="search-bar" type="text" placeholder="Search events..." class="w-full p-2 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-400">
+<body class="bg-gray-50">
+    <!-- Redesigned Header -->
+    <nav class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center px-6 py-4">
+            <a href="dashboard.php" class="text-3xl font-bold">Event System</a>
+            <div class="w-full md:w-1/3">
+                <input id="search-bar" type="text" placeholder="Search events..." class="w-full p-2 bg-gray-100 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
             </div>
-            <div class="space-x-6">
-                <a href="dashboard.php" class="hover:underline">Home</a>
-                <a href="profile.php" class="hover:underline``">View Profile</a>
-            </div>
-            <a href="../index.php?page=logout" class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg">Logout</a>
+            <a href="../index.php?page=logout" class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">Logout</a>
         </div>
     </nav>
 
-    <!-- All Events Table -->
-    <div class="container mx-auto p-10 bg-white shadow-lg rounded-lg">
-        <h2 class="text-xl font-semibold mb-4">Browse Available Events</h2>
-        <table class="min-w-full bg-white border border-gray-300 rounded-lg">
-            <thead>
-                <tr>
-                    <th class="py-2 border-b text-left">Event Name</th>
-                    <th class="py-2 border-b text-left">Date</th>
-                    <th class="py-2 border-b text-left">Location</th>
-                    <th class="py-2 border-b text-left">Status</th>
-                    <th class="py-2 border-b text-left">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($all_events as $event): ?>
-                <tr>
-                    <td class="py-2 border-b"><?= htmlspecialchars(
-                    	$event["name"],
-                    ) ?></td>
-                    <td class="py-2 border-b"><?= htmlspecialchars(
-                    	$event["event_date"],
-                    ) ?></td>
-                    <td class="py-2 border-b"><?= htmlspecialchars(
-                    	$event["location"],
-                    ) ?></td>
-                    <td class="py-2 border-b">
-                        <?php if ($event["status"] === "canceled"): ?>
-                            <span class="text-red-500">Canceled</span>
-                        <?php elseif ($event["status"] === "closed"): ?>
-                            <span class="text-gray-500">Closed</span>
-                        <?php else: ?>
-                            <span class="text-green-500">Open</span>
-                        <?php endif; ?>
-                    </td>
-                    <td class="py-2 border-b">
-                        <!-- View Details Button -->
-                        <button class="text-blue-500 view-details-btn" data-event-id="<?= $event[
-                        	"id"
-                        ] ?>">View Details</button>
-                        <?php if (
-                        	in_array($event["id"], $registered_events)
-                        ): ?>
-                            <span class="text-green-500 font-bold">Registered</span> |
-                            <button class="text-red-500 cancel-btn" data-event-id="<?= $event[
-                            	"id"
-                            ] ?>">Cancel Registration</button>
-                        <?php elseif ($event["status"] === "open"): ?>
-                            <button class="text-blue-500 register-btn" data-event-id="<?= $event[
-                            	"id"
-                            ] ?>">Register</button>
-                        <?php else: ?>
-                            <span class="text-gray-500">Registration Closed</span>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+    <!-- Card Layout for Events -->
+    <div class="container mx-auto px-6 py-10">
+    <h2 class="text-2xl font-bold mb-6">Available Events</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <?php foreach ($all_events as $event): ?>
+        <div class="bg-white shadow-md rounded-lg p-6 transform transition duration-300 hover:scale-105 hover:shadow-lg">
+            <div class="flex items-center mb-4">
+                <h3 class="text-2xl font-bold"><?= htmlspecialchars($event["name"]) ?></h3>
+            </div>
+            <div class="flex items-center mb-2">
+                <svg class="w-6 h-6 text-indigo-600 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <p class="text-sm text-gray-600">Date: <?= htmlspecialchars($event["event_date"]) ?></p>
+            </div>
+            <div class="flex items-center mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-indigo-600 mr-3 flex-shrink-0">
+                    <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
+                </svg>
+                <p class="text-sm text-gray-600">Location: <?= htmlspecialchars($event["location"]) ?></p>
+            </div>
+            <p class="text-sm font-semibold <?= $event["status"] === 'open' ? 'text-green-600' : ($event["status"] === 'closed' ? 'text-gray-600' : 'text-red-600') ?> mb-4">
+                Status: <?= ucfirst(htmlspecialchars($event["status"])) ?>
+            </p>
+            <div class="flex justify-between items-center">
+                <button class="text-indigo-600 hover:text-indigo-800 view-details-btn transition duration-300 ease-in-out transform hover:-translate-y-1" data-event-id="<?= $event['id'] ?>">View Details</button>
+                <?php if (in_array($event["id"], $registered_events)): ?>
+                    <div class="flex items-center">
+                        <span class="text-green-500 font-bold mr-2">Registered</span>
+                        <button class="text-red-500 hover:text-red-700 cancel-btn transition duration-300 ease-in-out transform hover:-translate-y-1" data-event-id="<?= $event["id"] ?>">Cancel</button>
+                    </div>
+                <?php elseif ($event["status"] === "open"): ?>
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg register-btn transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md" data-event-id="<?= $event["id"] ?>">Register</button>
+                <?php else: ?>
+                    <span class="text-gray-500">Registration Closed</span>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php endforeach; ?>
     </div>
+</div>
 
     <!-- View Details Modal Structure -->
-    <div id="eventDetailsModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden">
+    <div id="eventDetailsModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
             <div class="mb-4">
                 <img id="eventBanner" src="" alt="Event Banner" class="w-full h-48 object-cover rounded-t-lg">
             </div>
-
-            <!-- Event Details -->
             <h2 class="text-2xl font-bold mb-4">Event Details</h2>
             <p class="mb-2"><strong>Name:</strong> <span id="eventName"></span></p>
             <p class="mb-2"><strong>Date:</strong> <span id="eventDate"></span></p>
@@ -126,7 +102,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
     </div>
 
     <!-- Register Modal Structure -->
-    <div id="registerModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden">
+    <div id="registerModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
             <h2 class="text-xl font-bold mb-4">Confirm Registration</h2>
             <p>Are you sure you want to register for this event?</p>
@@ -138,7 +114,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
     </div>
 
     <!-- Cancel Modal Structure -->
-    <div id="cancelModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden">
+    <div id="cancelModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
             <h2 class="text-xl font-bold mb-4">Confirm Cancellation</h2>
             <p>Are you sure you want to cancel your registration for this event?</p>
@@ -150,7 +126,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
     </div>
 
     <!-- Success Message Modal -->
-    <div id="successModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden">
+    <div id="successModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
             <h2 class="text-xl font-bold mb-4">Action Complete</h2>
             <p id="successMessage">Success!</p>
@@ -163,49 +139,46 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
         $(document).ready(function() {
             let selectedEventId = null;
 
-              // Search bar functionality
-        $('#search-bar').on('input', function() {
-            let query = $(this).val();
+            // Search bar functionality
+            $('#search-bar').on('input', function() {
+                let query = $(this).val();
 
-            // If query is empty, send an empty request to fetch all events
-            $.ajax({
-                url: 'search_events.php',
-                method: 'GET',
-                data: { query: query },
-                success: function(response) {
-                    let events = JSON.parse(response);
-                    let eventRows = '';
+                $.ajax({
+                    url: 'search_events.php',
+                    method: 'GET',
+                    data: { query: query },
+                    success: function(response) {
+                        let events = JSON.parse(response);
+                        let eventRows = '';
 
-                    // Iterate over events and dynamically update the table rows
-                    if (events.length > 0) {
-                        events.forEach(function(event) {
-                            eventRows += `
-                                <tr>
-                                    <td class="py-2 border-b">${event.name}</td>
-                                    <td class="py-2 border-b">${event.event_date}</td>
-                                    <td class="py-2 border-b">${event.location}</td>
-                                    <td class="py-2 border-b">
-                                        ${event.status === 'canceled' ? '<span class="text-red-500">Canceled</span>' : (event.status === 'closed' ? '<span class="text-gray-500">Closed</span>' : '<span class="text-green-500">Open</span>')}
-                                    </td>
-                                    <td class="py-2 border-b">
-                                        <button class="text-blue-500 view-details-btn" data-event-id="${event.id}">View Details</button>
-                                        ${event.status === 'open' ? '<button class="text-blue-500 register-btn" data-event-id="'+ event.id +'">Register</button>' : '<span class="text-gray-500">Registration Closed</span>'}
-                                    </td>
-                                </tr>
-                            `;
-                        });
-                    } else {
-                        eventRows = '<tr><td colspan="5" class="text-center py-2">No events found</td></tr>';
+                        if (events.length > 0) {
+                            events.forEach(function(event) {
+                                eventRows += `
+                                    <div class="bg-white shadow-md rounded-lg p-6">
+                                        <h3 class="text-2xl font-bold mb-2">${event.name}</h3>
+                                        <p class="text-sm text-gray-600">Date: ${event.event_date}</p>
+                                        <p class="text-sm text-gray-600">Location: ${event.location}</p>
+                                        <p class="text-sm font-semibold ${event.status === 'open' ? 'text-green-600' : (event.status === 'closed' ? 'text-gray-600' : 'text-red-600')} mb-4">
+                                            Status: ${event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                                        </p>
+                                        <div class="flex justify-between items-center">
+                                            <button class="text-indigo-600 hover:text-indigo-800 view-details-btn" data-event-id="${event.id}">View Details</button>
+                                            ${event.status === 'open' ? '<button class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg register-btn" data-event-id="'+ event.id +'">Register</button>' : '<span class="text-gray-500">Registration Closed</span>'}
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                        } else {
+                            eventRows = '<div class="text-center py-6">No events found</div>';
+                        }
+
+                        $('.grid').html(eventRows);
+                    },
+                    error: function() {
+                        alert('Error fetching events.');
                     }
-
-                    // Replace the event table body with new rows
-                    $('tbody').html(eventRows);
-                },
-                error: function() {
-                    alert('Error fetching events.');
-                }
+                });
             });
-        });
 
             // Handle View Details button click
             $('.view-details-btn').on('click', function() {
@@ -223,12 +196,11 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
                         $('#eventDescription').text(event.description);
                         $('#maxParticipants').text(event.max_participants);
                         $('#eventStatus').text(event.status.charAt(0).toUpperCase() + event.status.slice(1));
-                        
-                        // Set event banner/picture
+
                         if (event.banner && event.banner !== '') {
-                            $('#eventBanner').attr('src', '../uploads/' + event.banner).show();  // Show the banner if it exists
+                            $('#eventBanner').attr('src', '../uploads/' + event.banner).show();
                         } else {
-                            $('#eventBanner').hide();  // Hide the banner section if there is no banner
+                            $('#eventBanner').hide();
                         }
 
                         $('#eventDetailsModal').removeClass('hidden');

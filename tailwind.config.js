@@ -2,7 +2,8 @@
 module.exports = {
   content: [
     './admin/*.php',
-    './user/*.php',
+    './user/*.php',,
+    './css/*.css'
   ],
   theme: {
     extend: {},
