@@ -10,7 +10,7 @@ if ($_SESSION['role'] != 'admin') {
 $stmt = $pdo->query("SELECT id, name, email, role FROM users");
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
+<!-- Error Modal -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
