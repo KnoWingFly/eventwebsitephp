@@ -2,6 +2,15 @@
 session_start();
 require "../config.php";
 
+// Ensure you have installed PhpSpreadsheet via Composer
+require "../vendor/autoload.php";  // PhpSpreadsheet
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+
 if ($_SESSION["role"] != "admin") {
     header("Location: ../index.php?page=login");
     exit();
@@ -24,7 +33,7 @@ if (!$event) {
 }
 
 $stmt_registrants = $pdo->prepare("
-    SELECT users.name, users.email 
+    SELECT users.name, users.email, registrations.registered_at 
     FROM registrations 
     JOIN users ON registrations.user_id = users.id 
     WHERE registrations.event_id = ?
@@ -32,10 +41,45 @@ $stmt_registrants = $pdo->prepare("
 $stmt_registrants->execute([$event_id]);
 $registrants = $stmt_registrants->fetchAll(PDO::FETCH_ASSOC);
 
-// CSV Export Logic
-if (isset($_GET["export"]) && $_GET["export"] === "csv") {
+// Excel Export Logic
+if (isset($_GET["export"]) && $_GET["export"] === "xlsx") {
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+    $sheet->setTitle('Registrations');
+
+    // Set column headers
+    $sheet->setCellValue('A1', 'Name');
+    $sheet->setCellValue('B1', 'Email');
+    $sheet->setCellValue('C1', 'Event Title');
+    $sheet->setCellValue('D1', 'Registered At');
+
+    // Header Row Styling (bold, background color, center alignment)
+    $headerStyle = [
+        'font' => [
+            'bold' => true,
+        ],
+        'fill' => [
+            'fillType' => Fill::FILL_SOLID,
+            'startColor' => ['rgb' => '4CAF50'],  // Green background
+        ],
+        'alignment' => [
+            'horizontal' => Alignment::HORIZONTAL_CENTER,
+            'vertical' => Alignment::VERTICAL_CENTER,
+        ],
+        'borders' => [
+            'allBorders' => [
+                'borderStyle' => Border::BORDER_THIN,
+                'color' => ['rgb' => '000000'],
+            ],
+        ],
+    ];
+
+    // Apply header styling
+    $sheet->getStyle('A1:D1')->applyFromArray($headerStyle);
+
+    // SQL Query to fetch event and registration data
     $stmt = $pdo->prepare("
-        SELECT users.name, users.email, events.name as event_name
+        SELECT users.name, users.email, events.name as event_name, registrations.registered_at 
         FROM registrations 
         JOIN users ON registrations.user_id = users.id 
         JOIN events ON registrations.event_id = events.id 
@@ -44,37 +88,51 @@ if (isset($_GET["export"]) && $_GET["export"] === "csv") {
     $stmt->execute([$event_id]);
     $registrations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Ensure the output buffer is completely cleared
-    if (ob_get_length()) {
-        ob_end_clean();
-    }
-
-    // Setting headers to download the file as a CSV
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename=registrations.csv');
-
-    // Add UTF-8 BOM for proper Excel recognition
-    echo "\xEF\xBB\xBF";
-
-    // Open output stream for writing CSV
-    $output = fopen('php://output', 'w');
-
-    // Using a semicolon (;) as delimiter for CSV to match locale expectations
-    fputcsv($output, ['Name', 'Email', 'Event Title'], ';');
-
-    // Writing each row of data to CSV with semicolon delimiter
+    // Populate data with alternating row color
+    $row = 2; // Start on the second row, since the first row is for column headers
+    $alternate = false;
     foreach ($registrations as $registration) {
-        fputcsv($output, [
-            $registration['name'],  // Column A: Name
-            $registration['email'], // Column B: Email
-            $registration['event_name'] // Column C: Event Name
-        ], ';');
+        $sheet->setCellValue("A$row", $registration['name']);
+        $sheet->setCellValue("B$row", $registration['email']);
+        $sheet->setCellValue("C$row", $registration['event_name']);
+        $sheet->setCellValue("D$row", $registration['registered_at']);
+        
+        // Alternate row color for readability
+        if ($alternate) {
+            $sheet->getStyle("A$row:D$row")->applyFromArray([
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => 'F2F2F2'],  // Light grey background
+                ],
+            ]);
+        }
+
+        // Add borders to each cell
+        $sheet->getStyle("A$row:D$row")->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000'],
+                ],
+            ],
+        ]);
+
+        $row++;
+        $alternate = !$alternate; // Toggle row color
     }
 
-    // Close the output stream
-    fclose($output);
+    // Autosize columns for better fit
+    foreach (range('A', 'D') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    }
 
-    // Exit to prevent further output
+    // Send the generated Excel file to the browser for download
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename="registrations.xlsx"');
+    header('Cache-Control: max-age=0');
+
+    $writer = new Xlsx($spreadsheet);
+    $writer->save('php://output');
     exit();
 }
 ?>
@@ -92,7 +150,7 @@ if (isset($_GET["export"]) && $_GET["export"] === "csv") {
         <h1 class="text-2xl font-bold mb-6">Registrants for Event: <?= htmlspecialchars($event["name"]) ?></h1>
         
         <div class="mb-4">
-            <a href="registrants.php?event_id=<?= $event_id ?>&export=csv" class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-lg">Export to CSV</a>
+            <a href="registrants.php?event_id=<?= $event_id ?>&export=xlsx" class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-lg">Export to Excel</a>
         </div>
 
         <div class="bg-white shadow-lg rounded-lg p-6">
@@ -101,6 +159,7 @@ if (isset($_GET["export"]) && $_GET["export"] === "csv") {
                     <tr>
                         <th class="py-2 border-b text-left">Name</th>
                         <th class="py-2 border-b text-left">Email</th>
+                        <th class="py-2 border-b text-left">Registered At</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -108,6 +167,7 @@ if (isset($_GET["export"]) && $_GET["export"] === "csv") {
                     <tr>
                         <td class="py-2 border-b"><?= htmlspecialchars($registrant["name"]) ?></td>
                         <td class="py-2 border-b"><?= htmlspecialchars($registrant["email"]) ?></td>
+                        <td class="py-2 border-b"><?= htmlspecialchars($registrant["registered_at"]) ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
