@@ -4,7 +4,7 @@ require_once 'config.php';
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'login';
 
-// Routing logic
+// Routing logic tessss
 switch ($page) {
     case 'admin_dashboard':
         if (isAdmin()) {
