@@ -56,31 +56,48 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password</title>
-    <link href="../css/output.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-300 font-sans">
-<div class="max-w-lg mx-auto mt-10 bg-gray-800 rounded-lg shadow-lg">
-    <div class="p-6">
-        <h1 class="text-3xl text-center text-white mb-6">Forgot Password</h1>
+<body class="bg-base-300 min-h-screen flex items-center justify-center">
+
+<div class="card w-96 bg-base-100 shadow-xl">
+    <div class="card-body">
+        <h2 class="card-title justify-center mb-4">Forgot Password</h2>
         <form action="" method="post">
-            <div class="mt-6">
-                <label class="text-gray-400">Email Address<span class="text-red-500">*</span></label>
-                <input type="email" name="email" required autocomplete="off" class="w-full p-3 mt-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:border-teal-500">
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Email Address</span>
+                </label>
+                <input type="email" name="email" required autocomplete="off" class="input input-bordered">
             </div>
-            <button type="submit" class="mt-6 w-full py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600">Send Reset Link</button>
+            <div class="form-control mt-6">
+                <button type="submit" class="btn btn-primary">Send Reset Link</button>
+            </div>
         </form>
 
         <?php if ($error): ?>
-            <p class="mt-4 text-red-500 text-center"><?= $error ?></p>
+            <div class="alert alert-error shadow-lg mt-4">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span><?= $error ?></span>
+                </div>
+            </div>
         <?php elseif ($success): ?>
-            <p class="mt-4 text-green-500 text-center"><?= $success ?></p>
+            <div class="alert alert-success shadow-lg mt-4">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span><?= $success ?></span>
+                </div>
+            </div>
         <?php endif; ?>
     </div>
 </div>
+
 </body>
 </html>
