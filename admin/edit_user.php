@@ -17,11 +17,11 @@ if (isset($_GET['id'])) {
 
     // If no user found, redirect to user management page
     if (!$user) {
-        header('Location: management_user.php');
+        header('Location: manage_user.php');
         exit;
     }
 } else {
-    header('Location: management_user.php');
+    header('Location: manage_user.php');
     exit;
 }
 
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Redirect back to management page after update
     if ($success) {
-        header('Location: management_user.php?message=success');
+        header('Location: manage_user.php?message=success');
         exit;
     } else {
         $error_message = "Failed to update user. Please try again.";
@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <div class="form-control flex justify-end space-x-4">
                         <button type="submit" class="btn btn-primary">Update</button>
-                        <a href="management_user.php" class="btn btn-secondary">Cancel</a>
+                        <a href="manage_user.php" class="btn btn-secondary">Cancel</a>
                     </div>
                 </form>
             </div>
