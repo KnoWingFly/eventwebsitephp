@@ -25,18 +25,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 	// Update profile
 	if ($password && $password === $confirm_password) {
-		// Update name, email, and password
 		$hashed_password = password_hash($password, PASSWORD_DEFAULT);
-		$stmt_update = $pdo->prepare(
-			"UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?",
-		);
+		$stmt_update = $pdo->prepare("UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?");
 		$stmt_update->execute([$name, $email, $hashed_password, $user_id]);
 		$success = "Profile and password updated successfully!";
 	} elseif (!$password) {
-		// Update name and email only
-		$stmt_update = $pdo->prepare(
-			"UPDATE users SET name = ?, email = ? WHERE id = ?",
-		);
+		$stmt_update = $pdo->prepare("UPDATE users SET name = ?, email = ? WHERE id = ?");
 		$stmt_update->execute([$name, $email, $user_id]);
 		$success = "Profile updated successfully!";
 	} else {
@@ -51,45 +45,49 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="min-h-screen bg-gray-900 flex items-center justify-center">
-    <div class="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-lg">
-        <h1 class="text-2xl font-bold text-white mb-6 text-center">Edit Profile</h1>
+<body class="flex justify-center items-center min-h-screen bg-gray-900">
+    <div class="bg-gray-800 rounded-lg shadow-lg p-8 max-w-md w-full">
+        <h1 class="text-white text-center font-semibold text-2xl mb-6">Edit Profile</h1>
 
-        <!-- Success or Error Messages -->
+        <!-- Display error or success messages -->
         <?php if ($error): ?>
-            <p class="text-red-500 mb-4"><?= htmlspecialchars($error) ?></p>
+            <div class="mb-4 p-3 bg-red-500 text-white rounded-lg">
+                <?= htmlspecialchars($error) ?>
+            </div>
         <?php elseif ($success): ?>
-            <p class="text-green-500 mb-4"><?= htmlspecialchars($success) ?></p>
+            <div class="mb-4 p-3 bg-green-500 text-white rounded-lg">
+                <?= htmlspecialchars($success) ?>
+            </div>
         <?php endif; ?>
 
-        <form action="" method="post">
+        <form method="POST" action="">
             <div class="mb-4">
-                <label class="block text-gray-300 mb-2">Name</label>
-                <input type="text" name="name" value="<?= htmlspecialchars($user["name"]) ?>" 
-                    required class="w-full p-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <label for="name" class="block text-gray-300 mb-1">Name</label>
+                <input type="text" name="name" id="name" required value="<?= htmlspecialchars($user["name"]) ?>" 
+                    class="block w-full rounded-lg p-3 bg-gray-700 text-white focus:ring-purple-500 focus:ring-2 focus:outline-none">
+            </div>
+            
+            <div class="mb-4">
+                <label for="email" class="block text-gray-300 mb-1">Email</label>
+                <input type="email" name="email" id="email" required value="<?= htmlspecialchars($user["email"]) ?>" 
+                    class="block w-full rounded-lg p-3 bg-gray-700 text-white focus:ring-purple-500 focus:ring-2 focus:outline-none">
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-300 mb-2">Email</label>
-                <input type="email" name="email" value="<?= htmlspecialchars($user["email"]) ?>" 
-                    required class="w-full p-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <label for="password" class="block text-gray-300 mb-1">New Password</label>
+                <input type="password" name="password" id="password" 
+                    class="block w-full rounded-lg p-3 bg-gray-700 text-white focus:ring-purple-500 focus:ring-2 focus:outline-none">
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-300 mb-2">New Password</label>
-                <input type="password" name="password" 
-                    class="w-full p-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <label for="confirm_password" class="block text-gray-300 mb-1">Confirm New Password</label>
+                <input type="password" name="confirm_password" id="confirm_password" 
+                    class="block w-full rounded-lg p-3 bg-gray-700 text-white focus:ring-purple-500 focus:ring-2 focus:outline-none">
             </div>
 
-            <div class="mb-4">
-                <label class="block text-gray-300 mb-2">Confirm New Password</label>
-                <input type="password" name="confirm_password" 
-                    class="w-full p-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-            </div>
-
-            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg">
+            <button type="submit" class="w-full p-3 bg-purple-600 hover:bg-purple-700 rounded-lg text-white font-semibold">
                 Update Profile
             </button>
         </form>
