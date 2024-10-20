@@ -25,88 +25,187 @@ $closestatus->execute();
 $events = $stmt->fetchAll(); 
 ?> 
 
-<!DOCTYPE html> 
-<html lang="en" data-theme="dark"> 
-<head> 
-    <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <title>Admin Dashboard - Event Manager</title> 
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet" type="text/css" /> 
-    <link href="../css/output.css" rel="stylesheet"> 
-</head> 
-<body class="bg-base-900 text-white"> 
-<div class="container mx-auto p-4"> 
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Event Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
+    <link href="../css/output.css" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        .sidebar {
+            width: 3rem;
+            transition: width 0.3s ease;
+            overflow: hidden;
+            background-color: #1e1e1e;
+        }
+        .sidebar:hover {
+            width: 16rem;
+        }
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 1rem 0;
+        }
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #a0a0a0;
+            transition: color 0.3s ease;
+        }
+        .sidebar-menu a:hover {
+            color: #ffffff;
+        }
+        .sidebar-menu i {
+            font-size: 1.25rem;
+            min-width: 1rem;
+            display: flex;
+            justify-content: center;
+        }
+        .link-text {
+            margin-left: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar:hover .link-text {
+            opacity: 1;
+        }
+        .logout-link {
+            margin-top: auto;
+        }
 
-    <!-- Header Section --> 
-    <div class="navbar bg-[#6C63FF] text-primary-content rounded-box mb-4"> 
-        <div class="flex-1"> 
-            <h1 class="text-2xl font-bold">Event Manager - Admin Dashboard</h1> 
-        </div> 
-        <div class="flex-none"> 
-            <a href="../index.php?page=logout" class="btn btn-ghost">Logout</a> 
-        </div> 
+        /* Add margin between action buttons */
+        .action-buttons a {
+            margin-right: 0.5rem; /* Adjust margin as needed */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-menu">
+                <!-- Updated Links and Icons -->
+                <a href="create_event.php" class="tooltip tooltip-right" data-tip="Create Event">
+                    <i class="ph ph-plus-circle"></i>
+                    <span class="link-text">Create Event</span>
+                </a>
+                <a href="views_user.php" class="tooltip tooltip-right" data-tip="User Views">
+                    <i class="ph ph-eye"></i>
+                    <span class="link-text">User Views</span>
+                </a>
+                <a href="manage_user.php" class="tooltip tooltip-right" data-tip="User Management">
+                    <i class="ph ph-user-gear"></i>
+                    <span class="link-text">User Management</span>
+                </a>
+                <a href="../index.php?page=logout" class="logout-link tooltip tooltip-right" data-tip="Logout">
+                    <i class="ph ph-sign-out"></i>
+                    <span class="link-text">Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-4">
+            <header class="mb-8">
+                <h1 class="text-2xl font-bold">Event Manager - Admin Dashboard</h1>
+            </header>
+
+            <div class="overflow-x-auto bg-base-100 rounded-box shadow-xl">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Date</th>
+                            <th>Registrants</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($events as $event): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($event["name"]) ?></td>
+                            <td><?= htmlspecialchars($event["event_date"]) ?></td>
+                            <td><?= htmlspecialchars($event["registrants"]) ?> / <?= htmlspecialchars($event["max_participants"]) ?></td>
+                            <td>
+                                <div class="flex gap-2 action-buttons">
+                                    <a href="registrants.php?event_id=<?= $event["id"] ?>" class="btn btn-sm btn-info">
+                                        <i class="ph ph-users"></i> View
+                                    </a>
+                                    <a href="edit_event.php?id=<?= $event["id"] ?>" class="btn btn-sm btn-warning">
+                                        <i class="ph ph-pencil"></i> Edit
+                                    </a>
+                                    <button onclick="openDeleteModal(<?= $event['id'] ?>)" class="btn btn-sm btn-error">
+                                        <i class="ph ph-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </main>
     </div>
 
-    <!-- Admin Menu Section --> 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4"> 
-        <a href="create_event.php" class="btn bg-[#FF007A] text-white btn-block"> 
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 mr-2 stroke-current"> 
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path> 
-            </svg> 
-            Add Events 
-        </a> 
-        <a href="views_user.php" class="btn bg-[#00C9A7] text-white btn-block"> 
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 mr-2 stroke-current"> 
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path> 
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path> 
-            </svg> 
-            User Views 
-        </a> 
-        <a href="manage_user.php" class="btn bg-[#6C63FF] text-white btn-block"> 
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 mr-2 stroke-current"> 
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1 .066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path> 
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path> 
-            </svg> 
-            User Management 
-        </a> 
-    </div>
+    <!-- Delete Confirmation Modal -->
+    <dialog id="deleteModal" class="modal">
+        <form method="dialog" class="modal-box">
+            <h3 class="font-bold text-lg">Confirm Deletion</h3>
+            <p class="py-4">Are you sure you want to delete this event?</p>
+            <div class="modal-action">
+                <button class="btn btn-ghost" onclick="closeDeleteModal()">Cancel</button>
+                <button id="confirmDelete" class="btn btn-error">Delete</button>
+            </div>
+        </form>
+    </dialog>
 
-    <!-- Events Overview Section --> 
-    <div class="card bg-base-900 shadow-xl"> 
-        <div class="card-body"> 
-            <h2 class="card-title text-2xl mb-4">📅 Events Overview</h2> 
-            <div class="overflow-x-auto"> 
-                <table class="table w-full table-zebra"> 
-                    <thead> 
-                        <tr> 
-                            <th>Event Name</th> 
-                            <th>Date</th> 
-                            <th>Registrants</th> 
-                            <th>Actions</th> 
-                        </tr> 
-                    </thead> 
-                    <tbody> 
-                        <?php foreach ($events as $event): ?> 
-                        <tr> 
-                            <td><?= htmlspecialchars($event["name"]) ?></td> 
-                            <td><?= htmlspecialchars($event["event_date"]) ?></td> 
-                            <td> 
-                                <div class="badge bg-[#6C63FF] text-white"><?= htmlspecialchars($event["registrants"]) ?> / <?= htmlspecialchars($event["max_participants"]) ?></div> 
-                            </td> 
-                            <td> 
-                                <div class="btn-group"> 
-                                    <a href="registrants.php?event_id=<?= $event["id"] ?>" class="btn btn-sm bg-[#00C9A7] text-white">View</a> 
-                                    <a href="edit_event.php?id=<?= $event["id"] ?>" class="btn btn-sm bg-[#FFD700] text-black">Edit</a> 
-                                    <a href="delete_event.php?id=<?= $event["id"] ?>" class="btn btn-sm bg-[#FF007A] text-white" onclick="return confirm('Are you sure you want to delete this event?')">Delete</a> 
-                                </div> 
-                            </td> 
-                        </tr> 
-                        <?php endforeach; ?> 
-                    </tbody> 
-                </table> 
-            </div> 
-        </div> 
-    </div> 
-</div> 
-</body> 
+    <script>
+        let deleteEventId = null;
+
+        function openDeleteModal(eventId) {
+            deleteEventId = eventId;
+            document.getElementById('deleteModal').showModal();
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').close();
+        }
+
+        document.getElementById('confirmDelete').addEventListener('click', function() {
+            if (deleteEventId) {
+                window.location.href = 'delete_event.php?id=' + deleteEventId;
+            }
+        });
+
+        // Add touch event listeners for mobile devices
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const sidebar = document.querySelector('.sidebar');
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            sidebar.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, false);
+
+            sidebar.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, false);
+
+            function handleSwipe() {
+                if (touchEndX < touchStartX) {
+                    sidebar.style.width = '4rem';
+                }
+                if (touchEndX > touchStartX) {
+                    sidebar.style.width = '16rem';
+                }
+            }
+        });
+    </script>
+</body>
 </html>

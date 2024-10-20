@@ -28,67 +28,241 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
     <title>User Dashboard</title>
     <link href="../css/output.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
-<body class="bg-gray-50">
-    <!-- Redesigned Header -->
-    <nav class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg">
-    <div class="container mx-auto flex justify-between items-center px-6 py-4">
-        <a href="dashboard.php" class="text-3xl font-bold">Event System</a>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            overflow-x: hidden;
+        }
         
-        <div class="w-full md:w-1/3">
-            <input id="search-bar" type="text" placeholder="Search events..." class="w-full p-2 bg-gray-100 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+        .container {
+            max-width: 1200px; 
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        h1, h2 {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .bg-purple-800 {
+            background-color: #374151;
+        }
+        
+        .bg-gray-800 {
+            background-color: #282c34;
+        }
+
+        .card {
+            background-color: #282c34;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            background-color: #1a202c;
+            color: white;
+            padding: 1rem;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .btn {
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .status-open {
+            color: #10B981;
+        }
+
+        .status-closed {
+            color: #6B7280;
+        }
+
+        .status-other {
+            color: #EF4444;
+        }
+
+        .card {
+            color: white;
+        }
+
+        .card h3 {
+            color: white;
+        }
+
+        .card p {
+            color: #e2e8f0; 
+        }
+
+        /* Status colors */
+        .status-open {
+            color: #10B981;
+        }
+
+        .status-closed {
+            color: #6B7280; 
+        }
+
+        .status-other {
+            color: #EF4444; 
+        }
+
+        /* Button text colors */
+        .register-btn {
+            color: white; 
+        }
+
+        .cancel-btn {
+            color: #EF4444;
+        }
+
+        .view-details-btn {
+            color: #3B82F6; 
+        }
+
+        .registered-text {
+            color: #10B981;
+        }
+
+        .registration-closed-text {
+            color: #6B7280;
+        }
+
+        .header-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background-color: #1a202c;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            margin-right: 1rem;
+        }
+
+        .search-container {
+            flex-grow: 1;
+            max-width: 600px;
+            margin: 0.5rem 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            border: none;
+            background-color: #2d3748;
+            color: white;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .container {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            .search-container {
+                order: 3;
+                max-width: none;
+                margin: 0.5rem 0;
+            }
+
+            .nav-buttons {
+                order: 2;
+                justify-content: flex-end;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header -->
+    <nav class="w-full bg-gray-800 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center px-6 py-4">
+            <a href="dashboard.php" class="text-3xl font-bold">Event System</a>
+            
+            <div class="w-full md:w-1/3">
+                <input id="search-bar" type="text" placeholder="Search events..." class="w-full p-2 bg-gray-700 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400">
+            </div>
+            <div class="flex space-x-4">
+                <a href="profile.php" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition duration-300">
+                    <i class="ph ph-user mr-2"></i>Profile
+                </a>
+                <a href="../index.php?page=logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition duration-300">
+                    <i class="ph ph-sign-out mr-2"></i>Logout
+                </a>
+            </div>
         </div>
+    </nav>
 
-        <!-- New Profile Button added in the Navbar -->
-        <div class="flex space-x-4">
-            <a href="profile.php" class="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">Profile</a>
-            <a href="../index.php?page=logout" class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">Logout</a>
-        </div>
-    </div>
-</nav>
-
-
-    <!-- Card Layout for Events -->
-    <div class="container mx-auto px-6 py-10">
-    <h2 class="text-2xl font-bold mb-6">Available Events</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <?php foreach ($all_events as $event): ?>
-        <div class="bg-white shadow-md rounded-lg p-6 transform transition duration-300 hover:scale-105 hover:shadow-lg">
-            <div class="flex items-center mb-4">
-                <h3 class="text-2xl font-bold"><?= htmlspecialchars($event["name"]) ?></h3>
-            </div>
-            <div class="flex items-center mb-2">
-                <svg class="w-6 h-6 text-indigo-600 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                <p class="text-sm text-gray-600">Date: <?= htmlspecialchars($event["event_date"]) ?></p>
-            </div>
-            <div class="flex items-center mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-indigo-600 mr-3 flex-shrink-0">
-                    <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
-                </svg>
-                <p class="text-sm text-gray-600">Location: <?= htmlspecialchars($event["location"]) ?></p>
-            </div>
-            <p class="text-sm font-semibold <?= $event["status"] === 'open' ? 'text-green-600' : ($event["status"] === 'closed' ? 'text-gray-600' : 'text-red-600') ?> mb-4">
-                Status: <?= ucfirst(htmlspecialchars($event["status"])) ?>
-            </p>
-            <div class="flex justify-between items-center">
-                <button class="text-indigo-600 hover:text-indigo-800 view-details-btn transition duration-300 ease-in-out transform hover:-translate-y-1" data-event-id="<?= $event['id'] ?>">View Details</button>
-                <?php if (in_array($event["id"], $registered_events)): ?>
-                    <div class="flex items-center">
-                        <span class="text-green-500 font-bold mr-2">Registered</span>
-                        <button class="text-red-500 hover:text-red-700 cancel-btn transition duration-300 ease-in-out transform hover:-translate-y-1" data-event-id="<?= $event["id"] ?>">Cancel</button>
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <h2 class="text-2xl font-bold text-white mb-8 mt-8">Available Events</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <?php foreach ($all_events as $event): ?>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-xl font-bold"><?= htmlspecialchars($event["name"]) ?></h3>
                     </div>
-                <?php elseif ($event["status"] === "open"): ?>
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg register-btn transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md" data-event-id="<?= $event["id"] ?>">Register</button>
-                <?php else: ?>
-                    <span class="text-gray-500">Registration Closed</span>
-                <?php endif; ?>
-            </div>
+                    <div class="card-body">
+                        <div class="flex items-center mb-2">
+                            <i class="ph ph-calendar text-xl text-white mr-2"></i>
+                            <p class="text-sm"><?= htmlspecialchars($event["event_date"]) ?></p>
+                        </div>
+                        <div class="flex items-center mb-2">
+                            <i class="ph ph-map-pin text-xl text-white mr-2"></i>
+                            <p class="text-sm"><?= htmlspecialchars($event["location"]) ?></p>
+                        </div>
+                        <p class="text-sm font-semibold status-<?= $event["status"] ?> mb-4">
+                            Status: <?= ucfirst(htmlspecialchars($event["status"])) ?>
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <button class="view-details-btn btn" data-event-id="<?= $event['id'] ?>">View Details</button>
+                            <?php if (in_array($event["id"], $registered_events)): ?>
+                                <div class="flex items-center">
+                                    <span class="registered-text font-bold mr-2">Registered</span>
+                                    <button class="cancel-btn btn" data-event-id="<?= $event["id"] ?>">Cancel</button>
+                                </div>
+                            <?php elseif ($event["status"] === "open"): ?>
+                                <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg register-btn btn" data-event-id="<?= $event["id"] ?>">Register</button>
+                            <?php else: ?>
+                                <span class="registration-closed-text">Registration Closed</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
         </div>
-        <?php endforeach; ?>
-    </div>
-</div>
+    </main>
 
     <!-- View Details Modal Structure -->
     <div id="eventDetailsModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
@@ -145,6 +319,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
     <script>
         $(document).ready(function() {
             let selectedEventId = null;
+            let registeredEvents = <?php echo json_encode($registered_events); ?>;
 
             // Search bar functionality
             $('#search-bar').on('input', function() {
@@ -160,17 +335,37 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
 
                         if (events.length > 0) {
                             events.forEach(function(event) {
+                                let isRegistered = registeredEvents.includes(parseInt(event.id));
                                 eventRows += `
-                                    <div class="bg-white shadow-md rounded-lg p-6">
-                                        <h3 class="text-2xl font-bold mb-2">${event.name}</h3>
-                                        <p class="text-sm text-gray-600">Date: ${event.event_date}</p>
-                                        <p class="text-sm text-gray-600">Location: ${event.location}</p>
-                                        <p class="text-sm font-semibold ${event.status === 'open' ? 'text-green-600' : (event.status === 'closed' ? 'text-gray-600' : 'text-red-600')} mb-4">
-                                            Status: ${event.status.charAt(0).toUpperCase() + event.status.slice(1)}
-                                        </p>
-                                        <div class="flex justify-between items-center">
-                                            <button class="text-indigo-600 hover:text-indigo-800 view-details-btn" data-event-id="${event.id}">View Details</button>
-                                            ${event.status === 'open' ? '<button class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg register-btn" data-event-id="'+ event.id +'">Register</button>' : '<span class="text-gray-500">Registration Closed</span>'}
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="text-xl font-bold">${event.name}</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="flex items-center mb-2">
+                                                <i class="ph ph-calendar text-xl text-white mr-2"></i>
+                                                <p class="text-sm">${event.event_date}</p>
+                                            </div>
+                                            <div class="flex items-center mb-2">
+                                                <i class="ph ph-map-pin text-xl text-white mr-2"></i>
+                                                <p class="text-sm">${event.location}</p>
+                                            </div>
+                                            <p class="text-sm font-semibold status-${event.status} mb-4">
+                                                Status: ${event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                                            </p>
+                                            <div class="flex justify-between items-center">
+                                                <button class="view-details-btn btn" data-event-id="${event.id}">View Details</button>
+                                                ${isRegistered ? 
+                                                    `<div class="flex items-center">
+                                                        <span class="registered-text font-bold mr-2">Registered</span>
+                                                        <button class="cancel-btn btn" data-event-id="${event.id}">Cancel</button>
+                                                    </div>` :
+                                                    (event.status === 'open' ? 
+                                                        `<button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg register-btn btn" data-event-id="${event.id}">Register</button>` : 
+                                                        '<span class="registration-closed-text">Registration Closed</span>'
+                                                    )
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                 `;
@@ -188,7 +383,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
             });
 
             // Handle View Details button click
-            $('.view-details-btn').on('click', function() {
+            $(document).on('click', '.view-details-btn', function() {
                 selectedEventId = $(this).data('event-id');
                 $.ajax({
                     url: 'event_details.php', // Fetch event details via AJAX
@@ -221,7 +416,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
             });
 
             // Handle register button click
-            $('.register-btn').on('click', function() {
+            $(document).on('click', '.register-btn', function() {
                 selectedEventId = $(this).data('event-id');
                 $('#registerModal').removeClass('hidden');
             });
@@ -238,6 +433,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
                             $('#registerModal').addClass('hidden');
                             $('#successMessage').text(res.message);
                             $('#successModal').removeClass('hidden');
+                            registeredEvents.push(selectedEventId);
                         } else {
                             alert(res.message);
                         }
@@ -246,7 +442,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
             });
 
             // Handle cancel button click
-            $('.cancel-btn').on('click', function() {
+            $(document).on('click', '.cancel-btn', function() {
                 selectedEventId = $(this).data('event-id');
                 $('#cancelModal').removeClass('hidden');
             });
@@ -263,6 +459,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
                             $('#cancelModal').addClass('hidden');
                             $('#successMessage').text(res.message);
                             $('#successModal').removeClass('hidden');
+                            registeredEvents = registeredEvents.filter(id => id !== selectedEventId);
                         } else {
                             alert(res.message);
                         }
