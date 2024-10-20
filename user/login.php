@@ -66,14 +66,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         .card-container {
             perspective: 1000px;
             width: 90%; 
-            max-width: 800px; 
-            height: auto; 
+            max-width: 800px;
+            margin: 0 auto;
+            padding-top: 2rem; /* Add padding to move up */
         }
         
         .card-flip {
             position: relative;
             width: 100%;
-            height: auto; 
             transition: transform 0.8s;
             transform-style: preserve-3d;
         }
@@ -98,8 +98,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         
         .split-container {
             display: grid;
-            grid-template-columns: 1fr; 
-            gap: 1rem; 
+            grid-template-columns: 1fr;
+            gap: 1rem;
         }
         
         .info-section {
@@ -126,19 +126,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         @media (min-width: 600px) {
             .split-container {
-                grid-template-columns: 1fr 1fr; 
+                grid-template-columns: 1fr 1fr;
             }
         }
 
         .form-section, .info-section {
-            padding: 1rem; 
+            padding: 1rem;
         }
 
         @media (min-width: 600px) {
             .form-section, .info-section {
-                padding: 2rem; 
+                padding: 2rem;
             }
         }
+
+        /* Remove the forced 100vh to allow natural flow upwards */
+        .min-h-screen {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top */
+            min-height: 100vh; /* Minimum screen height for responsiveness */
+            padding-top: 2rem; 
+        }
+
     </style>
 </head>
 <body class="bg-base-300 min-h-screen flex items-center justify-center">
