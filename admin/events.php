@@ -27,27 +27,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Event</title>
+    <title>Create New Event</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #181A1B;
-            color: #E0E0E0;
+            background-color: #1A1A2E;
+            color: #E0E0E0; 
         }
         .form-container {
             max-width: 600px;
             margin: 50px auto;
-            background-color: #1F1F1F;
+            background-color: #2E2E3A; 
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;    
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
         }
+        .form-control, .form-select {
+            background-color: #3C3C4F; 
+            border: none;
+            color: #E0E0E0; 
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: #3C3C4F; 
+            color: #E0E0E0; 
+            box-shadow: none;
+            border-color: #6C63FF; 
+        }
+
         .btn-custom {
-            background-color: #6C63FF;
+            background-color: #6C63FF; 
             color: white;
         }
         .btn-custom:hover {
-            background-color: #574BDF;
+            background-color: #5A54D8;
         }
     </style>
 </head>
@@ -96,7 +109,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </form>
         </div>
     </div>
-
-
 </body>
 </html>
