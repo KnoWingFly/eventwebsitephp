@@ -46,6 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="../css/output.css" rel="stylesheet">
 </head>
 <body class="flex justify-center items-center min-h-screen bg-gray-900">
     <div class="bg-gray-800 rounded-lg shadow-lg p-8 max-w-md w-full">
