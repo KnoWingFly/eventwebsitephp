@@ -1,15 +1,15 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './admin/*.php',
-    './user/*.php',,
-    './css/*.css'
+    './admin/*.{html,js,php}',
+    './user/*.{html,js,php}',,
+    './css/*.{html,js,php,css}'
   ],
   theme: {
     extend: {},
   },
   plugins: [
-    [require('daisyui')],
+    require('daisyui'),
   ],
   daisyui: {
     themes: ["dark", "light"],

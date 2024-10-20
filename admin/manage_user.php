@@ -17,9 +17,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.7.3/dist/full.css" rel="stylesheet" type="text/css" />
+    <!-- <link href="https://cdn.jsdelivr.net/npm/daisyui@3.7.3/dist/full.css" rel="stylesheet" type="text/css" /> -->
     <link href="../css/output.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-base-300 p-4 sm:p-6 md:p-8">
     <div class="max-w-4xl mx-auto">
