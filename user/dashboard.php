@@ -319,6 +319,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
     <script>
         $(document).ready(function() {
             let selectedEventId = null;
+            let registeredEvents = <?php echo json_encode($registered_events); ?>;
 
             // Search bar functionality
             $('#search-bar').on('input', function() {
@@ -334,6 +335,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
 
                         if (events.length > 0) {
                             events.forEach(function(event) {
+                                let isRegistered = registeredEvents.includes(parseInt(event.id));
                                 eventRows += `
                                     <div class="card">
                                         <div class="card-header">
@@ -353,9 +355,15 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
                                             </p>
                                             <div class="flex justify-between items-center">
                                                 <button class="view-details-btn btn" data-event-id="${event.id}">View Details</button>
-                                                ${event.status === 'open' ? 
-                                                    '<button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg register-btn btn" data-event-id="'+ event.id +'">Register</button>' : 
-                                                    '<span class="registration-closed-text">Registration Closed</span>'
+                                                ${isRegistered ? 
+                                                    `<div class="flex items-center">
+                                                        <span class="registered-text font-bold mr-2">Registered</span>
+                                                        <button class="cancel-btn btn" data-event-id="${event.id}">Cancel</button>
+                                                    </div>` :
+                                                    (event.status === 'open' ? 
+                                                        `<button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg register-btn btn" data-event-id="${event.id}">Register</button>` : 
+                                                        '<span class="registration-closed-text">Registration Closed</span>'
+                                                    )
                                                 }
                                             </div>
                                         </div>
@@ -425,6 +433,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
                             $('#registerModal').addClass('hidden');
                             $('#successMessage').text(res.message);
                             $('#successModal').removeClass('hidden');
+                            registeredEvents.push(selectedEventId);
                         } else {
                             alert(res.message);
                         }
@@ -450,6 +459,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
                             $('#cancelModal').addClass('hidden');
                             $('#successMessage').text(res.message);
                             $('#successModal').removeClass('hidden');
+                            registeredEvents = registeredEvents.filter(id => id !== selectedEventId);
                         } else {
                             alert(res.message);
                         }
