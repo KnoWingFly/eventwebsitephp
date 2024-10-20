@@ -28,67 +28,83 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
     <title>User Dashboard</title>
     <link href="../css/output.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .bg-primary-gradient {
+            background: linear-gradient(to right, #4a90e2, #50e3c2); 
+        }
+
+        .text-primary {
+            color: #4a90e2;
+        }
+
+        .bg-button {
+            background-color: #4a90e2; 
+        }
+
+        .bg-button:hover {
+            background-color: #357ABD;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
     <!-- Redesigned Header -->
-    <nav class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg">
-    <div class="container mx-auto flex justify-between items-center px-6 py-4">
-        <a href="dashboard.php" class="text-3xl font-bold">Event System</a>
-        
-        <div class="w-full md:w-1/3">
-            <input id="search-bar" type="text" placeholder="Search events..." class="w-full p-2 bg-gray-100 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
-        </div>
+    <nav class="w-full bg-primary-gradient text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center px-6 py-4">
+            <a href="dashboard.php" class="text-3xl font-bold">Event System</a>
+            
+            <div class="w-full md:w-1/3">
+                <input id="search-bar" type="text" placeholder="Search events..." class="w-full p-2 bg-gray-100 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            </div>
 
-        <!-- New Profile Button added in the Navbar -->
-        <div class="flex space-x-4">
-            <a href="profile.php" class="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">Profile</a>
-            <a href="../index.php?page=logout" class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">Logout</a>
+            <!-- New Profile Button added in the Navbar -->
+            <div class="flex space-x-4">
+                <a href="profile.php" class="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">Profile</a>
+                <a href="../index.php?page=logout" class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">Logout</a>
+            </div>
         </div>
-    </div>
-</nav>
-
+    </nav>
 
     <!-- Card Layout for Events -->
     <div class="container mx-auto px-6 py-10">
-    <h2 class="text-2xl font-bold mb-6">Available Events</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <?php foreach ($all_events as $event): ?>
-        <div class="bg-white shadow-md rounded-lg p-6 transform transition duration-300 hover:scale-105 hover:shadow-lg">
-            <div class="flex items-center mb-4">
-                <h3 class="text-2xl font-bold"><?= htmlspecialchars($event["name"]) ?></h3>
+        <h2 class="text-2xl font-bold mb-6">Available Events</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <?php foreach ($all_events as $event): ?>
+            <div class="bg-white shadow-md rounded-lg p-6 transform transition duration-300 hover:scale-105 hover:shadow-lg">
+                <div class="flex items-center mb-4">
+                    <h3 class="text-2xl font-bold text-primary"><?= htmlspecialchars($event["name"]) ?></h3>
+                </div>
+                <div class="flex items-center mb-2">
+                    <svg class="w-6 h-6 text-primary mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <p class="text-sm text-gray-600">Date: <?= htmlspecialchars($event["event_date"]) ?></p>
+                </div>
+                <div class="flex items-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-primary mr-3 flex-shrink-0">
+                        <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
+                    </svg>
+                    <p class="text-sm text-gray-600">Location: <?= htmlspecialchars($event["location"]) ?></p>
+                </div>
+                <p class="text-sm font-semibold <?= $event["status"] === 'open' ? 'text-green-600' : ($event["status"] === 'closed' ? 'text-gray-600' : 'text-red-600') ?> mb-4">
+                    Status: <?= ucfirst(htmlspecialchars($event["status"])) ?>
+                </p>
+                <div class="flex justify-between items-center">
+                    <button class="text-primary hover:text-indigo-800 view-details-btn transition duration-300 ease-in-out transform hover:-translate-y-1" data-event-id="<?= $event['id'] ?>">View Details</button>
+                    <?php if (in_array($event["id"], $registered_events)): ?>
+                        <div class="flex items-center">
+                            <span class="text-green-500 font-bold mr-2">Registered</span>
+                            <button class="text-red-500 hover:text-red-700 cancel-btn transition duration-300 ease-in-out transform hover:-translate-y-1" data-event-id="<?= $event["id"] ?>">Cancel</button>
+                        </div>
+                    <?php elseif ($event["status"] === "open"): ?>
+                        <button class="bg-button hover:bg-blue-700 text-white px-4 py-2 rounded-lg register-btn transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md" data-event-id="<?= $event["id"] ?>">Register</button>
+                    <?php else: ?>
+                        <span class="text-gray-500">Registration Closed</span>
+                    <?php endif; ?>
+                </div>
             </div>
-            <div class="flex items-center mb-2">
-                <svg class="w-6 h-6 text-indigo-600 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                <p class="text-sm text-gray-600">Date: <?= htmlspecialchars($event["event_date"]) ?></p>
-            </div>
-            <div class="flex items-center mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-indigo-600 mr-3 flex-shrink-0">
-                    <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
-                </svg>
-                <p class="text-sm text-gray-600">Location: <?= htmlspecialchars($event["location"]) ?></p>
-            </div>
-            <p class="text-sm font-semibold <?= $event["status"] === 'open' ? 'text-green-600' : ($event["status"] === 'closed' ? 'text-gray-600' : 'text-red-600') ?> mb-4">
-                Status: <?= ucfirst(htmlspecialchars($event["status"])) ?>
-            </p>
-            <div class="flex justify-between items-center">
-                <button class="text-indigo-600 hover:text-indigo-800 view-details-btn transition duration-300 ease-in-out transform hover:-translate-y-1" data-event-id="<?= $event['id'] ?>">View Details</button>
-                <?php if (in_array($event["id"], $registered_events)): ?>
-                    <div class="flex items-center">
-                        <span class="text-green-500 font-bold mr-2">Registered</span>
-                        <button class="text-red-500 hover:text-red-700 cancel-btn transition duration-300 ease-in-out transform hover:-translate-y-1" data-event-id="<?= $event["id"] ?>">Cancel</button>
-                    </div>
-                <?php elseif ($event["status"] === "open"): ?>
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg register-btn transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md" data-event-id="<?= $event["id"] ?>">Register</button>
-                <?php else: ?>
-                    <span class="text-gray-500">Registration Closed</span>
-                <?php endif; ?>
-            </div>
+            <?php endforeach; ?>
         </div>
-        <?php endforeach; ?>
     </div>
-</div>
 
     <!-- View Details Modal Structure -->
     <div id="eventDetailsModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
