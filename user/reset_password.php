@@ -43,18 +43,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="card w-96 bg-base-100 shadow-xl">
     <div class="card-body">
-        <h2 class="card-title justify-center mb-4">Reset Password</h2>
+        <h2 class="card-title justify-center mb-4 text-white">Reset Password</h2>
         <form action="" method="post">
             <input type="hidden" name="token" value="<?= htmlspecialchars($_GET['token']) ?>">
             <div class="form-control">
                 <label class="label">
-                    <span class="label-text">New Password</span>
+                    <span class="label-text text-white">New Password</span>
                 </label>
                 <input type="password" name="password" required autocomplete="off" class="input input-bordered">
             </div>
             <div class="form-control mt-4">
                 <label class="label">
-                    <span class="label-text">Confirm Password</span>
+                    <span class="label-text text-white">Confirm Password</span>
                 </label>
                 <input type="password" name="confirm_password" required autocomplete="off" class="input input-bordered">
             </div>
