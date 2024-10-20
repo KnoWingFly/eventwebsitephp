@@ -51,42 +51,47 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profile</title>
-    <link href="../css/output.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="b">
-    <div class="container mx-auto p-10">
-        <h1 class="text-2xl font-bold mb-6">Edit Profile</h1>
+<body class="min-h-screen bg-gray-900 flex items-center justify-center">
+    <div class="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-lg">
+        <h1 class="text-2xl font-bold text-white mb-6 text-center">Edit Profile</h1>
 
-        <!-- Display success or error message -->
+        <!-- Success or Error Messages -->
         <?php if ($error): ?>
-            <p class="text-red-500"><?= htmlspecialchars($error) ?></p>
+            <p class="text-red-500 mb-4"><?= htmlspecialchars($error) ?></p>
         <?php elseif ($success): ?>
-            <p class="text-green-500"><?= htmlspecialchars($success) ?></p>
+            <p class="text-green-500 mb-4"><?= htmlspecialchars($success) ?></p>
         <?php endif; ?>
 
-        <!-- Profile Update Form -->
-        <form action="" method="post" class="bg-white shadow-lg rounded-lg p-6">
-            <div class="mb-6">
-                <label class="text-gray-700">Name</label>
-                <input type="text" name="name" value="<?= htmlspecialchars(
-                	$user["name"],
-                ) ?>" required class="w-full p-3 mt-2 bg-gray-200 rounded-lg">
+        <form action="" method="post">
+            <div class="mb-4">
+                <label class="block text-gray-300 mb-2">Name</label>
+                <input type="text" name="name" value="<?= htmlspecialchars($user["name"]) ?>" 
+                    required class="w-full p-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
             </div>
-            <div class="mb-6">
-                <label class="text-gray-700">Email</label>
-                <input type="email" name="email" value="<?= htmlspecialchars(
-                	$user["email"],
-                ) ?>" required class="w-full p-3 mt-2 bg-gray-200 rounded-lg">
+
+            <div class="mb-4">
+                <label class="block text-gray-300 mb-2">Email</label>
+                <input type="email" name="email" value="<?= htmlspecialchars($user["email"]) ?>" 
+                    required class="w-full p-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
             </div>
-            <div class="mb-6">
-                <label class="text-gray-700">New Password (leave blank if you don't want to change)</label>
-                <input type="password" name="password" class="w-full p-3 mt-2 bg-gray-200 rounded-lg">
+
+            <div class="mb-4">
+                <label class="block text-gray-300 mb-2">New Password</label>
+                <input type="password" name="password" 
+                    class="w-full p-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
             </div>
-            <div class="mb-6">
-                <label class="text-gray-700">Confirm New Password</label>
-                <input type="password" name="confirm_password" class="w-full p-3 mt-2 bg-gray-200 rounded-lg">
+
+            <div class="mb-4">
+                <label class="block text-gray-300 mb-2">Confirm New Password</label>
+                <input type="password" name="confirm_password" 
+                    class="w-full p-3 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
             </div>
-            <button type="submit" class="bg-teal-500 hover:bg-teal-600 text-white py-3 px-6 rounded-lg">Update Profile</button>
+
+            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg">
+                Update Profile
+            </button>
         </form>
     </div>
 </body>
