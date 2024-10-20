@@ -1,8 +1,6 @@
 <?php
 session_start();
 require "../config.php";
-
-// Ensure you have installed PhpSpreadsheet via Composer
 require "../vendor/autoload.php";  // PhpSpreadsheet
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -55,12 +53,10 @@ if (isset($_GET["export"]) && $_GET["export"] === "xlsx") {
 
     // Header Row Styling (bold, background color, center alignment)
     $headerStyle = [
-        'font' => [
-            'bold' => true,
-        ],
+        'font' => ['bold' => true],
         'fill' => [
             'fillType' => Fill::FILL_SOLID,
-            'startColor' => ['rgb' => '4CAF50'],  // Green background
+            'startColor' => ['rgb' => '4CAF50'],
         ],
         'alignment' => [
             'horizontal' => Alignment::HORIZONTAL_CENTER,
@@ -74,10 +70,8 @@ if (isset($_GET["export"]) && $_GET["export"] === "xlsx") {
         ],
     ];
 
-    // Apply header styling
     $sheet->getStyle('A1:D1')->applyFromArray($headerStyle);
 
-    // SQL Query to fetch event and registration data
     $stmt = $pdo->prepare("
         SELECT users.name, users.email, events.name as event_name, registrations.registered_at 
         FROM registrations 
@@ -88,8 +82,7 @@ if (isset($_GET["export"]) && $_GET["export"] === "xlsx") {
     $stmt->execute([$event_id]);
     $registrations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Populate data with alternating row color
-    $row = 2; // Start on the second row, since the first row is for column headers
+    $row = 2;
     $alternate = false;
     foreach ($registrations as $registration) {
         $sheet->setCellValue("A$row", $registration['name']);
@@ -97,17 +90,15 @@ if (isset($_GET["export"]) && $_GET["export"] === "xlsx") {
         $sheet->setCellValue("C$row", $registration['event_name']);
         $sheet->setCellValue("D$row", $registration['registered_at']);
         
-        // Alternate row color for readability
         if ($alternate) {
             $sheet->getStyle("A$row:D$row")->applyFromArray([
                 'fill' => [
                     'fillType' => Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => 'F2F2F2'],  // Light grey background
+                    'startColor' => ['rgb' => 'F2F2F2'],
                 ],
             ]);
         }
 
-        // Add borders to each cell
         $sheet->getStyle("A$row:D$row")->applyFromArray([
             'borders' => [
                 'allBorders' => [
@@ -118,15 +109,13 @@ if (isset($_GET["export"]) && $_GET["export"] === "xlsx") {
         ]);
 
         $row++;
-        $alternate = !$alternate; // Toggle row color
+        $alternate = !$alternate;
     }
 
-    // Autosize columns for better fit
     foreach (range('A', 'D') as $columnID) {
         $sheet->getColumnDimension($columnID)->setAutoSize(true);
     }
 
-    // Send the generated Excel file to the browser for download
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     header('Content-Disposition: attachment;filename="registrations.xlsx"');
     header('Cache-Control: max-age=0');
@@ -144,30 +133,137 @@ if (isset($_GET["export"]) && $_GET["export"] === "xlsx") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrants for <?= htmlspecialchars($event["name"]) ?></title>
     <link href="../css/output.css" rel="stylesheet">
+    <style>
+        
+        body {
+            background-color: #1c1c1c; 
+            color: #e0e0e0; 
+            font-family: 'Helvetica Neue', sans-serif;
+        }
+
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #e0e0e0;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        a {
+            display: inline-block;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .bg-green-500 {
+            background-color: #4CAF50;
+        }
+
+        .hover\\:bg-green-700:hover {
+            background-color: #3e8e41;
+        }
+
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #333333;
+            color: #e0e0e0;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 2px solid #444444;
+        }
+
+        td {
+            background-color: #2b2b2b;
+            color: #ffffff;
+            border-bottom: 1px solid #444444;
+        }
+
+        
+        tr:hover td {
+            background-color: #3a3a3a;
+        }
+
+        
+        .btn {
+            padding: 10px 20px;
+            background-color: #4CAF50; 
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #3e8e41;
+        }
+
+        
+        .box {
+            background-color: #2b2b2b;
+            padding: 24px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        
+        .btn-view:hover {
+            background-color: #8bc34a; 
+        }
+
+        .btn-edit:hover {
+            background-color: #ffeb3b;
+        }
+
+        .btn-delete:hover {
+            background-color: #f44336;
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
-    <div class="container mx-auto p-10">
-        <h1 class="text-2xl font-bold mb-6">Registrants for Event: <?= htmlspecialchars($event["name"]) ?></h1>
+<body>
+    <div class="container">
+        <h1>Registrants for Event: <?= htmlspecialchars($event["name"]) ?></h1>
         
         <div class="mb-4">
-            <a href="registrants.php?event_id=<?= $event_id ?>&export=xlsx" class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-lg">Export to Excel</a>
+            <a href="registrants.php?event_id=<?= $event_id ?>&export=xlsx" class="btn bg-green-500 hover:bg-green-700">Export to Excel</a>
         </div>
 
-        <div class="bg-white shadow-lg rounded-lg p-6">
-            <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+        <div class="box">
+            <table>
                 <thead>
                     <tr>
-                        <th class="py-2 border-b text-left">Name</th>
-                        <th class="py-2 border-b text-left">Email</th>
-                        <th class="py-2 border-b text-left">Registered At</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Registered At</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($registrants as $registrant): ?>
                     <tr>
-                        <td class="py-2 border-b"><?= htmlspecialchars($registrant["name"]) ?></td>
-                        <td class="py-2 border-b"><?= htmlspecialchars($registrant["email"]) ?></td>
-                        <td class="py-2 border-b"><?= htmlspecialchars($registrant["registered_at"]) ?></td>
+                        <td><?= htmlspecialchars($registrant["name"]) ?></td>
+                        <td><?= htmlspecialchars($registrant["email"]) ?></td>
+                        <td><?= htmlspecialchars($registrant["registered_at"]) ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
