@@ -18,12 +18,13 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.7.3/dist/full.css" rel="stylesheet" type="text/css" />
+    <link href="../css/output.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-base-300 p-4 sm:p-6 md:p-8">
     <div class="max-w-4xl mx-auto">
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 sm:mb-8">
-            <h1 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-0">User Management</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-0 text-white">User Management</h1>
             <a href="../index.php?page=logout" class="btn btn-sm sm:btn-md w-full sm:w-auto hover:bg-red-700 text-white">
                 Logout
             </a>

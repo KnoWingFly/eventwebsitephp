@@ -102,7 +102,7 @@ $events = $stmt->fetchAll();
                     <i class="ph ph-user-gear"></i>
                     <span class="link-text">User Management</span>
                 </a>
-                <a href="#" class="logout-link tooltip tooltip-right" data-tip="Logout">
+                <a href="../index.php?page=logout" class="logout-link tooltip tooltip-right" data-tip="Logout">
                     <i class="ph ph-sign-out"></i>
                     <span class="link-text">Logout</span>
                 </a>
