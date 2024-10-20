@@ -54,9 +54,9 @@ $registered_events = $stmt_history->fetchAll(PDO::FETCH_ASSOC);
                     <table class="table w-full text-xs sm:text-sm">
                         <thead>
                             <tr>
-                                <th class="text-left bg-base-300 px-2 sm:px-4 py-2 sm:py-3">Event Name</th>
-                                <th class="text-left bg-base-300 px-2 sm:px-4 py-2 sm:py-3">Date</th>
-                                <th class="text-left bg-base-300 px-2 sm:px-4 py-2 sm:py-3">Location</th>
+                                <th class="text-left bg-base-300 px-2 sm:px-4 py-2 sm:py-3 text-white">Event Name</th>
+                                <th class="text-left bg-base-300 px-2 sm:px-4 py-2 sm:py-3 text-white">Date</th>
+                                <th class="text-left bg-base-300 px-2 sm:px-4 py-2 sm:py-3 text-white">Location</th>
                             </tr>
                         </thead>
                         <tbody>

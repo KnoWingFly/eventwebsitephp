@@ -34,10 +34,10 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <table class="table table-zebra w-full">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Actions</th>
+                            <th class="text-white">Name</th>
+                            <th class="text-white">Email</th>
+                            <th class="text-white">Role</th>
+                            <th class="text-white">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,8 +48,8 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td class="whitespace-nowrap"><?php echo htmlspecialchars($user['role']); ?></td>
                                 <td>
                                     <div class="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0">
-                                        <a href="edit_user.php?id=<?= $user['id'] ?>" class="btn hover:bg-purple-700 text-white btn-xs sm:btn-sm transition-all duration-300">Edit</a>
-                                        <a href="delete_user.php?id=<?= $user['id'] ?>" class="btn hover:bg-purple-700 text-white btn-xs sm:btn-sm transition-all duration-300" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
+                                        <a href="edit_user.php?id=<?= $user['id'] ?>" class="btn hover:bg-purple-700 btn-xs sm:btn-sm transition-all duration-300">Edit</a>
+                                        <a href="delete_user.php?id=<?= $user['id'] ?>" class="btn hover:bg-purple-700 btn-xs sm:btn-sm transition-all duration-300" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
                                     </div>
                                 </td>
                             </tr>
