@@ -61,6 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>Create New Event</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet" type="text/css" />
     <link href="../css/create_event.css" rel="stylesheet">
+    <link href="../css/output.css" rel="stylesheet">
     <style>
         .input, .textarea, .select, .file-input {
             max-width: 100%;
@@ -85,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <div class="card bg-base-200 shadow-xl">
                 <div class="card-body p-6">
                     <div class="border-b border-base-300 pb-3 mb-4">
-                        <h1 class="card-title text-xl">Create New Event</h1>
+                        <h1 class="card-title text-xl text-white">Create New Event</h1>
                     </div>
 
                     <?php if ($error): ?>
@@ -98,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <!-- Event Name -->
                         <div class="form-control">
                             <label class="label py-1">
-                                <span class="label-text">Event Name</span>
+                                <span class="label-text text-white">Event Name</span>
                             </label>
                             <input type="text" name="name" required 
                                 class="input input-bordered input-sm bg-base-300">
@@ -108,14 +109,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="form-control">
                                 <label class="label py-1">
-                                    <span class="label-text">Event Date</span>
+                                    <span class="label-text text-white">Event Date</span>
                                 </label>
                                 <input type="date" name="event_date" required 
                                     class="input input-bordered input-sm bg-base-300">
                             </div>
                             <div class="form-control">
                                 <label class="label py-1">
-                                    <span class="label-text">Event Time</span>
+                                    <span class="label-text text-white">Event Time</span>
                                 </label>
                                 <input type="time" name="event_time" required 
                                     class="input input-bordered input-sm bg-base-300">
@@ -125,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <!-- Location -->
                         <div class="form-control">
                             <label class="label py-1">
-                                <span class="label-text">Location</span>
+                                <span class="label-text text-white">Location</span>
                             </label>
                             <input type="text" name="location" required 
                                 class="input input-bordered input-sm bg-base-300">
@@ -134,7 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <!-- Description -->
                         <div class="form-control">
                             <label class="label py-1">
-                                <span class="label-text">Description</span>
+                                <span class="label-text text-white">Description</span>
                             </label>
                             <textarea name="description" required rows="3" 
                                 class="textarea textarea-bordered bg-base-300 h-20 text-sm"></textarea>
@@ -143,7 +144,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <!-- Max Participants -->
                         <div class="form-control">
                             <label class="label py-1">
-                                <span class="label-text">Max Participants</span>
+                                <span class="label-text text-white">Max Participants</span>
                             </label>
                             <input type="number" name="max_participants" required 
                                 class="input input-bordered input-sm bg-base-300">
@@ -152,10 +153,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <!-- Event Status -->
                         <div class="form-control">
                             <label class="label py-1">
-                                <span class="label-text">Event Status</span>
+                                <span class="label-text text-white">Event Status</span>
                             </label>
                             <select name="status" required 
-                                class="select select-bordered select-sm bg-base-300">
+                                class="select select-bordered select-sm bg-base-300 ">
                                 <option value="open">Open</option>
                                 <option value="closed">Closed</option>
                                 <option value="canceled">Canceled</option>
@@ -165,7 +166,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <!-- Banner Upload -->
                         <div class="form-control">
                             <label class="label py-1">
-                                <span class="label-text">Upload Banner (Optional)</span>
+                                <span class="label-text text-white">Upload Banner (Optional)</span>
                             </label>
                             <input type="file" name="banner" accept="image/*"
                                 class="file-input file-input-bordered file-input-sm bg-base-300 w-full">
