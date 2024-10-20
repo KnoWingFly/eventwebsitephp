@@ -53,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>Edit Profile</title>
     <link href="../css/output.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100">
+<body class="b">
     <div class="container mx-auto p-10">
         <h1 class="text-2xl font-bold mb-6">Edit Profile</h1>
 
