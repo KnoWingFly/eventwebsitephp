@@ -45,6 +45,7 @@ $registered_events = $stmt_history->fetchAll(PDO::FETCH_ASSOC);
                 </div>
                 <div class="mt-4 sm:mt-6">
                     <a href="edit_profile.php" class="btn btn-primary btn-sm sm:btn-md">EDIT PROFILE</a>
+                    <a href="dashboard.php" class="btn btn-secondary btn-sm sm:btn-md">DASHBOARD</a>
                 </div>
             </div>
 
