@@ -8,40 +8,70 @@ if ($_SESSION["role"] != "admin") {
 }
 
 $error = "";
+$formData = [
+    'name' => '',
+    'event_date' => '',
+    'event_time' => '',
+    'location' => '',
+    'description' => '',
+    'max_participants' => '',
+    'status' => 'open'
+];
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $name = $_POST["name"];
-    $event_date = $_POST["event_date"];
-    $event_time = $_POST["event_time"];
-    $location = $_POST["location"];
-    $description = $_POST["description"];
-    $max_participants = $_POST["max_participants"];
-    $status = $_POST["status"];
+    // Preserve form data
+    $formData = [
+        'name' => $_POST["name"],
+        'event_date' => $_POST["event_date"],
+        'event_time' => $_POST["event_time"],
+        'location' => $_POST["location"],
+        'description' => $_POST["description"],
+        'max_participants' => $_POST["max_participants"],
+        'status' => $_POST["status"]
+    ];
 
     if (!empty($_FILES["banner"]["name"])) {
         $banner = $_FILES["banner"]["name"];
         $target_dir = "../uploads/";
         $target_file = $target_dir . basename($banner);
-
-        if (!move_uploaded_file($_FILES["banner"]["tmp_name"], $target_file)) {
+        
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime_type = finfo_file($finfo, $_FILES["banner"]["tmp_name"]);
+        finfo_close($finfo);
+        
+        $allowed_types = [
+            'image/jpg',
+            'image/jpeg',
+            'image/png'
+        ];
+        
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+        if (!in_array($mime_type, $allowed_types)) {
+            $error = "Sorry, only JPG, JPEG & PNG files are allowed for the banner.";
+        }
+        elseif (!in_array($imageFileType, ['jpg', 'jpeg', 'png'])) {
+            $error = "Sorry, only JPG, JPEG & PNG files are allowed for the banner.";
+        }
+        elseif (!move_uploaded_file($_FILES["banner"]["tmp_name"], $target_file)) {
             $error = "Error uploading the banner image.";
         }
     } else {
         $banner = null;
     }
-
+    
     if (!$error) {
         try {
             $stmt = $pdo->prepare("INSERT INTO events (name, event_date, event_time, location, description, max_participants, banner, status) 
                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([
-                $name,
-                $event_date,
-                $event_time,
-                $location,
-                $description,
-                $max_participants,
+                $formData['name'],
+                $formData['event_date'],
+                $formData['event_time'],
+                $formData['location'],
+                $formData['description'],
+                $formData['max_participants'],
                 $banner,
-                $status,
+                $formData['status'],
             ]);
 
             header("Location: dashboard.php");
@@ -102,6 +132,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 <span class="label-text text-white">Event Name</span>
                             </label>
                             <input type="text" name="name" required 
+                                value="<?= htmlspecialchars($formData['name']) ?>"
                                 class="input input-bordered input-sm bg-base-300">
                         </div>
 
@@ -112,6 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                     <span class="label-text text-white">Event Date</span>
                                 </label>
                                 <input type="date" name="event_date" required 
+                                    value="<?= htmlspecialchars($formData['event_date']) ?>"
                                     class="input input-bordered input-sm bg-base-300">
                             </div>
                             <div class="form-control">
@@ -119,6 +151,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                     <span class="label-text text-white">Event Time</span>
                                 </label>
                                 <input type="time" name="event_time" required 
+                                    value="<?= htmlspecialchars($formData['event_time']) ?>"
                                     class="input input-bordered input-sm bg-base-300">
                             </div>
                         </div>
@@ -129,6 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 <span class="label-text text-white">Location</span>
                             </label>
                             <input type="text" name="location" required 
+                                value="<?= htmlspecialchars($formData['location']) ?>"
                                 class="input input-bordered input-sm bg-base-300">
                         </div>
 
@@ -138,7 +172,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 <span class="label-text text-white">Description</span>
                             </label>
                             <textarea name="description" required rows="3" 
-                                class="textarea textarea-bordered bg-base-300 h-20 text-sm"></textarea>
+                                class="textarea textarea-bordered bg-base-300 h-20 text-sm"><?= htmlspecialchars($formData['description']) ?></textarea>
                         </div>
 
                         <!-- Max Participants -->
@@ -147,6 +181,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 <span class="label-text text-white">Max Participants</span>
                             </label>
                             <input type="number" name="max_participants" required 
+                                value="<?= htmlspecialchars($formData['max_participants']) ?>"
                                 class="input input-bordered input-sm bg-base-300">
                         </div>
 
@@ -156,10 +191,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 <span class="label-text text-white">Event Status</span>
                             </label>
                             <select name="status" required 
-                                class="select select-bordered select-sm bg-base-300 ">
-                                <option value="open">Open</option>
-                                <option value="closed">Closed</option>
-                                <option value="canceled">Canceled</option>
+                                class="select select-bordered select-sm bg-base-300">
+                                <option value="open" <?= $formData['status'] === 'open' ? 'selected' : '' ?>>Open</option>
+                                <option value="closed" <?= $formData['status'] === 'closed' ? 'selected' : '' ?>>Closed</option>
+                                <option value="canceled" <?= $formData['status'] === 'canceled' ? 'selected' : '' ?>>Canceled</option>
                             </select>
                         </div>
 
@@ -167,8 +202,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <div class="form-control">
                             <label class="label py-1">
                                 <span class="label-text text-white">Upload Banner (Optional)</span>
+                                <span class="label-text-alt text-white opacity-70">Allowed: JPG, JPEG & PNG</span>
                             </label>
-                            <input type="file" name="banner" accept="image/*"
+                            <input type="file" name="banner" accept=".jpg,.jpeg,.png"
                                 class="file-input file-input-bordered file-input-sm bg-base-300 w-full">
                         </div>
 
