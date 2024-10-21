@@ -28,15 +28,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		$hashed_password = password_hash($password, PASSWORD_DEFAULT);
 		$stmt_update = $pdo->prepare("UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?");
 		$stmt_update->execute([$name, $email, $hashed_password, $user_id]);
-		$success = "Profile and password updated successfully!";
+		header("Location: profile.php");  
+		exit();  
 	} elseif (!$password) {
 		$stmt_update = $pdo->prepare("UPDATE users SET name = ?, email = ? WHERE id = ?");
 		$stmt_update->execute([$name, $email, $user_id]);
-		$success = "Profile updated successfully!";
+		header("Location: profile.php");  
+		exit();  
 	} else {
 		$error = "Passwords do not match!";
 	}
 }
+
 ?>
 
 <!DOCTYPE html>
