@@ -135,7 +135,7 @@ if (isset($_GET["export"]) && $_GET["export"] === "xlsx") {
     <link href="../css/output.css" rel="stylesheet">
     <style>
         body {
-            background-color: #121212;
+            background-color: #111827; 
             color: #ffffff;
         }
         .container {
@@ -168,8 +168,15 @@ if (isset($_GET["export"]) && $_GET["export"] === "xlsx") {
         .bg-green-500 {
             background-color: #4CAF50;
         }
-        .hover\\:bg-green-700:hover {
+        .hover\:bg-green-700:hover {
             background-color: #3E8E41;
+        }
+        .btn-back {
+            background-color: #42a5f5; 
+            color: white; 
+        }
+        .btn-back:hover {
+            background-color: #1e88e5; 
         }
         .btn-view {
             background-color: #00bcd4;
@@ -180,14 +187,26 @@ if (isset($_GET["export"]) && $_GET["export"] === "xlsx") {
         .btn-delete {
             background-color: #f44336;
         }
+        .button-group {
+            display: flex;
+            gap: 450px; /* Jarak antar tombol */
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="text-2xl font-bold mb-6">Registrants for Event: <?= htmlspecialchars($event["name"]) ?></h1>
         
-        <div class="mb-4">
-            <a href="registrants.php?event_id=<?= $event_id ?>&export=xlsx" class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-lg">Export to Excel</a>
+        <div class="button-group">
+            <a href="../admin/dashboard.php" 
+               class="btn-back hover:bg-blue-700 py-2 px-4 rounded-lg">
+               Back to Dashboard
+            </a>
+            <a href="registrants.php?event_id=<?= $event_id ?>&export=xlsx" 
+               class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-lg">
+               Export to Excel
+            </a>
         </div>
 
         <div class="bg-white shadow-lg rounded-lg p-6" style="background-color: #1e1e1e; color: white;">
@@ -200,13 +219,21 @@ if (isset($_GET["export"]) && $_GET["export"] === "xlsx") {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($registrants as $registrant): ?>
-                    <tr>
-                        <td class="py-2 border-b"><?= htmlspecialchars($registrant["name"]) ?></td>
-                        <td class="py-2 border-b"><?= htmlspecialchars($registrant["email"]) ?></td>
-                        <td class="py-2 border-b"><?= htmlspecialchars($registrant["registered_at"]) ?></td>
-                    </tr>
-                    <?php endforeach; ?>
+                    <?php if (empty($registrants)): ?>
+                        <tr>
+                            <td colspan="3" class="py-2 border-b text-center">
+                                Belum ada partisipan yang mendaftar saat ini.
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($registrants as $registrant): ?>
+                        <tr>
+                            <td class="py-2 border-b"><?= htmlspecialchars($registrant["name"]) ?></td>
+                            <td class="py-2 border-b"><?= htmlspecialchars($registrant["email"]) ?></td>
+                            <td class="py-2 border-b"><?= htmlspecialchars($registrant["registered_at"]) ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
