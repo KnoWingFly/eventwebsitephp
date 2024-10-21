@@ -13,6 +13,9 @@ $stmt = $pdo->prepare("SELECT * FROM events WHERE id = ?");
 $stmt->execute([$event_id]);
 $event = $stmt->fetch();
 
+// Initialize an error array
+$errors = [];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'];
     $event_date = $_POST['event_date'];
@@ -26,22 +29,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($_FILES['banner']['name'])) {
         $banner = $_FILES['banner']['name'];
         $target = "../uploads/" . basename($banner);
-        move_uploaded_file($_FILES['banner']['tmp_name'], $target);
+        $oldBannerPath = "../uploads/" . $event['banner'];  // Path to the old banner
+
+        $allowed_types = ['image/png', 'image/jpeg', 'image/jpg'];
+        $file_type = mime_content_type($_FILES['banner']['tmp_name']);
+
+        if (in_array($file_type, $allowed_types)) {
+            // Move the uploaded file to the target directory
+            if (move_uploaded_file($_FILES['banner']['tmp_name'], $target)) {
+                // If banner uploaded successfully, delete the old banner
+                if (file_exists($oldBannerPath) && $event['banner'] != $banner) {
+                    unlink($oldBannerPath); // Delete the old banner
+                }
+            } else {
+                $errors[] = 'Failed to upload the banner image.';
+            }
+        } else {
+            $errors[] = 'Invalid file type. Only PNG, JPG, and JPEG are allowed.';
+            $banner = $event['banner']; // Keep the existing banner if new one is invalid
+        }
     }
 
-    $stmt = $pdo->prepare("UPDATE events SET name = ?, event_date = ?, event_time = ?, location = ?, description = ?, max_participants = ?, status = ?, banner = ? WHERE id = ?");
-    $stmt->execute([$name, $event_date, $event_time, $location, $description, $max_participants, $status, $banner, $event_id]);
+    // Check for errors before updating
+    if (empty($errors)) {
+        // Update event information in the database
+        $stmt = $pdo->prepare("UPDATE events SET name = ?, event_date = ?, event_time = ?, location = ?, description = ?, max_participants = ?, status = ?, banner = ? WHERE id = ?");
+        $stmt->execute([$name, $event_date, $event_time, $location, $description, $max_participants, $status, $banner, $event_id]);
 
-    if ($status === 'canceled') {
-        $stmt_delete_registrations = $pdo->prepare("DELETE FROM registrations WHERE event_id = ?");
-        $stmt_delete_registrations->execute([$event_id]);
+        // If the event is canceled, delete all its registrations
+        if ($status === 'canceled') {
+            $stmt_delete_registrations = $pdo->prepare("DELETE FROM registrations WHERE event_id = ?");
+            $stmt_delete_registrations->execute([$event_id]);
+        }
+
+        header('Location: dashboard.php');
+        exit;
     }
-
-    header('Location: dashboard.php');
-    exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -77,6 +102,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="border-b border-base-300 pb-3 mb-4">
                         <h1 class="card-title text-xl text-white">Edit Event</h1>
                     </div>
+
+                    <?php if (!empty($errors)): ?>
+                        <div class="alert alert-error mb-4">
+                            <ul>
+                                <?php foreach ($errors as $error): ?>
+                                    <li><?= htmlspecialchars($error) ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
 
                     <form action="" method="POST" enctype="multipart/form-data" class="space-y-4">
                         <!-- Event Name -->
@@ -151,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label class="label py-1">
                                 <span class="label-text text-white">Upload Banner (Optional)</span>
                             </label>
-                            <input type="file" name="banner" accept="image/*"
+                            <input type="file" name="banner" accept=".png,.jpg,.jpeg"
                                 class="file-input file-input-bordered file-input-sm bg-base-300 w-full">
                             <?php if ($event['banner']): ?>
                                 <div class="mt-2">
@@ -174,30 +209,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Modal -->
-    <div id="modal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-base-300 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-base-200 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div class="sm:flex sm:items-start">
-                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-error bg-opacity-20 sm:mx-0 sm:h-10 sm:w-10">
-                        <svg class="h-6 w-6 text-error" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                    </div>
-                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                        <h3 class="text-lg leading-6 font-medium text-white" id="modal-title">Cannot Change Status</h3>
-                        <div class="mt-2">
-                            <p class="text-sm text-base-content">This event has already passed. You cannot change its status to 'open'.</p>
-                        </div>
-                    </div>
+    <div id="modal" class="fixed inset-0 flex items-center justify-center z-10 bg-opacity-75 bg-gray-900 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="bg-base-200 rounded-lg p-5 max-w-md w-full relative">
+            <div class="flex items-center justify-between">
+                <div class="text-center">
+                    <h3 class="text-lg font-medium leading-6 text-white" id="modal-title">Event cannot be re-opened</h3>
                 </div>
-                <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                    <button id="confirm" class="btn btn-error btn-sm">
-                        Understand
-                    </button>
-                </div>
+                <button id="closeModal" class="btn btn-sm btn-circle absolute right-2 top-2">✕</button>
             </div>
+            <p class="mt-2 text-sm text-gray-300">The event has already passed. You cannot change its status to "Open".</p>
         </div>
     </div>
 
@@ -207,19 +227,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const eventDate = new Date("<?= $event['event_date'] ?>T<?= $event['event_time'] ?>");
             const now = new Date();
             const originalStatus = "<?= $event['status'] ?>";
+            const modal = document.getElementById('modal');
+            const closeModalBtn = document.getElementById('closeModal');
 
+            // Check if event date has passed
             const isEventPassed = eventDate < now;
 
+            // Add event listener to status dropdown
             statusSelect.addEventListener('change', function (e) {
                 if (isEventPassed && this.value === 'open') {
                     e.preventDefault();
-                    document.getElementById('modal').classList.remove('hidden');
-                    this.value = originalStatus;
+                    modal.classList.remove('hidden');  // Show the modal
+                    this.value = originalStatus;  // Reset status to the original
                 }
             });
 
-            document.getElementById('confirm').addEventListener('click', function () {
-                document.getElementById('modal').classList.add('hidden');
+            // Close modal when clicking outside the modal content area
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.classList.add('hidden');  // Hide the modal when clicked outside
+                }
+            });
+
+            // Close modal when clicking the close button
+            closeModalBtn.addEventListener('click', function() {
+                modal.classList.add('hidden');
             });
         });
     </script>
