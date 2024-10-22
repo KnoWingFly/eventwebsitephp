@@ -41,7 +41,11 @@ $registered_events = $stmt_history->fetchAll(PDO::FETCH_ASSOC);
                 <h2 class="text-lg sm:text-xl lg:text-2xl font-semibold mb-3 sm:mb-4 text-base-content text-white break-words">Profile Information</h2>
                 <div class="space-y-2 sm:space-y-3 text-base-content text-sm sm:text-base">
                     <div class="mb-4">
-                        <img src="../images/<?= htmlspecialchars($user['profile_picture']) ?>" alt="Profile Picture" class="w-20 h-20 rounded-full">
+                        <?php if (!empty($user['profile_picture'])): ?>
+                            <img src="../images/<?= htmlspecialchars($user['profile_picture']) ?>" alt="Profile Picture" class="mt-2 w-20 h-20 rounded-full">
+                                <?php else: ?>
+                                    <img src="../images/default-avatar.png" alt="Default Profile Picture" class="mt-2 w-20 h-20 rounded-full">
+                        <?php endif; ?>                        
                     </div>
                     <p class="break-all"><span class="font-semibold">Name:</span> <?php echo htmlspecialchars($user['name']); ?></p>
                     <p class="break-all"><span class="font-semibold">Email:</span> <?php echo htmlspecialchars($user['email']); ?></p>
