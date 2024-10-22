@@ -284,8 +284,8 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
 
     <!-- Register Modal Structure -->
     <div id="registerModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
-            <h2 class="text-xl font-bold mb-4">Confirm Registration</h2>
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl max-w-lg w-full">
+            <h2 class="text-xl text-white font-bold mb-4">Confirm Registration</h2>
             <p>Are you sure you want to register for this event?</p>
             <div class="mt-4 flex justify-end space-x-4">
                 <button id="confirmRegister" class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded">Confirm</button>
@@ -296,8 +296,8 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
 
     <!-- Cancel Modal Structure -->
     <div id="cancelModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
-            <h2 class="text-xl font-bold mb-4">Confirm Cancellation</h2>
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl max-w-lg w-full">
+            <h2 class="text-xl text-white font-bold mb-4">Confirm Cancellation</h2>
             <p>Are you sure you want to cancel your registration for this event?</p>
             <div class="mt-4 flex justify-end space-x-4">
                 <button id="confirmCancel" class="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded">Confirm</button>
@@ -308,8 +308,8 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
 
     <!-- Success Message Modal -->
     <div id="successModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
-            <h2 class="text-xl font-bold mb-4">Action Complete</h2>
+        <div class="bg-gray-800 p-6 rounded-lg shadow-xl max-w-lg w-full">
+            <h2 class="text-xl text-white font-bold mb-4">Action Complete</h2>
             <p id="successMessage">Success!</p>
             <button id="closeSuccessModal" class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded mt-4">Close</button>
         </div>
