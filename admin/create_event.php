@@ -1,64 +1,84 @@
 <?php
 session_start();
-require '../config.php';
+require "../config.php";
 
-if ($_SESSION['role'] != 'admin') {
-    header('Location: ../index.php?page=login');
-    exit;
+if ($_SESSION["role"] != "admin") {
+    header("Location: ../index.php?page=login");
+    exit();
 }
 
-$event_id = $_GET['id'];
+$error = "";
+$formData = [
+    'name' => '',
+    'event_date' => '',
+    'event_time' => '',
+    'location' => '',
+    'description' => '',
+    'max_participants' => '',
+    'status' => 'open'
+];
 
-$stmt = $pdo->prepare("SELECT * FROM events WHERE id = ?");
-$stmt->execute([$event_id]);
-$event = $stmt->fetch();
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Preserve form data
+    $formData = [
+        'name' => $_POST["name"],
+        'event_date' => $_POST["event_date"],
+        'event_time' => $_POST["event_time"],
+        'location' => $_POST["location"],
+        'description' => $_POST["description"],
+        'max_participants' => $_POST["max_participants"],
+        'status' => $_POST["status"]
+    ];
 
-$error = ""; // Initialize error message variable
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['name'];
-    $event_date = $_POST['event_date'];
-    $event_time = $_POST['event_time'];
-    $location = $_POST['location'];
-    $description = $_POST['description'];
-    $max_participants = $_POST['max_participants'];
-    $status = $_POST['status'];
-
-    $banner = $event['banner']; // Keep the existing banner if not updated
-
-    // Check if a new banner is uploaded
-    if (!empty($_FILES['banner']['name'])) {
-        $banner = $_FILES['banner']['name'];
-        $target = "../uploads/" . basename($banner);
+    if (!empty($_FILES["banner"]["name"])) {
+        $banner = $_FILES["banner"]["name"];
+        $target_dir = "../uploads/";
+        $target_file = $target_dir . basename($banner);
         
-        // Validate the file type
-        $allowed_types = ['image/png', 'image/jpeg', 'image/jpg'];
-        $imageFileType = strtolower(pathinfo($target, PATHINFO_EXTENSION));
-        $mime_type = mime_content_type($_FILES['banner']['tmp_name']);
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime_type = finfo_file($finfo, $_FILES["banner"]["tmp_name"]);
+        finfo_close($finfo);
         
+        $allowed_types = [
+            'image/jpg',
+            'image/jpeg',
+            'image/png'
+        ];
+        
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
         if (!in_array($mime_type, $allowed_types)) {
             $error = "Sorry, only JPG, JPEG & PNG files are allowed for the banner.";
-        } elseif (!in_array($imageFileType, ['jpg', 'jpeg', 'png'])) {
+        }
+        elseif (!in_array($imageFileType, ['jpg', 'jpeg', 'png'])) {
             $error = "Sorry, only JPG, JPEG & PNG files are allowed for the banner.";
-        } elseif (!move_uploaded_file($_FILES["banner"]["tmp_name"], $target)) {
+        }
+        elseif (!move_uploaded_file($_FILES["banner"]["tmp_name"], $target_file)) {
             $error = "Error uploading the banner image.";
         }
+    } else {
+        $banner = null;
     }
+    
+    if (!$error) {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO events (name, event_date, event_time, location, description, max_participants, banner, status) 
+                                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([
+                $formData['name'],
+                $formData['event_date'],
+                $formData['event_time'],
+                $formData['location'],
+                $formData['description'],
+                $formData['max_participants'],
+                $banner,
+                $formData['status'],
+            ]);
 
-    // If there's no error, proceed to update the event information
-    if (empty($error)) {
-        // Update event information in the database
-        $stmt = $pdo->prepare("UPDATE events SET name = ?, event_date = ?, event_time = ?, location = ?, description = ?, max_participants = ?, status = ?, banner = ? WHERE id = ?");
-        $stmt->execute([$name, $event_date, $event_time, $location, $description, $max_participants, $status, $banner, $event_id]);
-
-        if ($status === 'canceled') {
-            $stmt_delete_registrations = $pdo->prepare("DELETE FROM registrations WHERE event_id = ?");
-            $stmt_delete_registrations->execute([$event_id]);
+            header("Location: dashboard.php");
+            exit();
+        } catch (PDOException $e) {
+            $error = "Error: " . $e->getMessage();
         }
-
-        // Only redirect if the update was successful and no errors occurred
-        header('Location: dashboard.php');
-        exit;
     }
 }
 ?>
@@ -66,9 +86,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" >
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Event</title>
+    <title>Create New Event</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet" type="text/css" />
     <link href="../css/create_event.css" rel="stylesheet">
     <link href="../css/output.css" rel="stylesheet">
@@ -91,17 +111,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
-    <div class="min-h-screen flex items-center justify-center p-4 bg-gray-900">
+    <div class="min-h-screen flex items-center justify-center p-4 bg-base-100">
         <div class="w-full max-w-lg mx-auto">
             <div class="card bg-base-200 shadow-xl">
                 <div class="card-body p-6">
                     <div class="border-b border-base-300 pb-3 mb-4">
-                        <h1 class="card-title text-xl text-white">Edit Event</h1>
+                        <h1 class="card-title text-xl text-white">Create New Event</h1>
                     </div>
 
                     <?php if ($error): ?>
-                        <div class="alert alert-error">
-                            <strong>Error!</strong> <?= htmlspecialchars($error) ?>
+                        <div class="alert alert-error text-sm">
+                            <?= htmlspecialchars($error) ?>
                         </div>
                     <?php endif; ?>
 
@@ -111,7 +131,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label class="label py-1">
                                 <span class="label-text text-white">Event Name</span>
                             </label>
-                            <input type="text" name="name" value="<?= htmlspecialchars($event['name']) ?>" required 
+                            <input type="text" name="name" required 
+                                value="<?= htmlspecialchars($formData['name']) ?>"
                                 class="input input-bordered input-sm bg-base-300">
                         </div>
 
@@ -121,14 +142,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <label class="label py-1">
                                     <span class="label-text text-white">Event Date</span>
                                 </label>
-                                <input type="date" name="event_date" value="<?= htmlspecialchars($event['event_date']) ?>" required 
+                                <input type="date" name="event_date" required 
+                                    value="<?= htmlspecialchars($formData['event_date']) ?>"
                                     class="input input-bordered input-sm bg-base-300">
                             </div>
                             <div class="form-control">
                                 <label class="label py-1">
                                     <span class="label-text text-white">Event Time</span>
                                 </label>
-                                <input type="time" name="event_time" value="<?= htmlspecialchars($event['event_time']) ?>" required 
+                                <input type="time" name="event_time" required 
+                                    value="<?= htmlspecialchars($formData['event_time']) ?>"
                                     class="input input-bordered input-sm bg-base-300">
                             </div>
                         </div>
@@ -138,7 +161,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label class="label py-1">
                                 <span class="label-text text-white">Location</span>
                             </label>
-                            <input type="text" name="location" value="<?= htmlspecialchars($event['location']) ?>" required 
+                            <input type="text" name="location" required 
+                                value="<?= htmlspecialchars($formData['location']) ?>"
                                 class="input input-bordered input-sm bg-base-300">
                         </div>
 
@@ -148,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <span class="label-text text-white">Description</span>
                             </label>
                             <textarea name="description" required rows="3" 
-                                class="textarea textarea-bordered bg-base-300 h-20 text-sm"><?= htmlspecialchars($event['description']) ?></textarea>
+                                class="textarea textarea-bordered bg-base-300 h-20 text-sm"><?= htmlspecialchars($formData['description']) ?></textarea>
                         </div>
 
                         <!-- Max Participants -->
@@ -156,7 +180,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label class="label py-1">
                                 <span class="label-text text-white">Max Participants</span>
                             </label>
-                            <input type="number" name="max_participants" value="<?= htmlspecialchars($event['max_participants']) ?>" required 
+                            <input type="number" name="max_participants" required 
+                                value="<?= htmlspecialchars($formData['max_participants']) ?>"
                                 class="input input-bordered input-sm bg-base-300">
                         </div>
 
@@ -167,9 +192,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </label>
                             <select name="status" required 
                                 class="select select-bordered select-sm bg-base-300">
-                                <option value="open" <?= $event['status'] === 'open' ? 'selected' : '' ?>>Open</option>
-                                <option value="closed" <?= $event['status'] === 'closed' ? 'selected' : '' ?>>Closed</option>
-                                <option value="canceled" <?= $event['status'] === 'canceled' ? 'selected' : '' ?>>Canceled</option>
+                                <option value="open" <?= $formData['status'] === 'open' ? 'selected' : '' ?>>Open</option>
+                                <option value="closed" <?= $formData['status'] === 'closed' ? 'selected' : '' ?>>Closed</option>
+                                <option value="canceled" <?= $formData['status'] === 'canceled' ? 'selected' : '' ?>>Canceled</option>
                             </select>
                         </div>
 
@@ -177,21 +202,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="form-control">
                             <label class="label py-1">
                                 <span class="label-text text-white">Upload Banner (Optional)</span>
+                                <span class="label-text-alt text-white opacity-70">Allowed: JPG, JPEG & PNG</span>
                             </label>
-                            <input type="file" name="banner" accept=".png,.jpg,.jpeg"
+                            <input type="file" name="banner" accept=".jpg,.jpeg,.png"
                                 class="file-input file-input-bordered file-input-sm bg-base-300 w-full">
-                            <?php if ($event['banner']): ?>
-                                <div class="mt-2">
-                                    <img src="../uploads/<?= htmlspecialchars($event['banner']) ?>" alt="Current Event Banner" 
-                                        class="max-w-xs rounded-lg shadow-lg">
-                                </div>
-                            <?php endif; ?>
                         </div>
 
                         <!-- Submit Button -->
                         <div class="form-control mt-4">
                             <button type="submit" class="btn btn-primary btn-sm">
-                                Update Event
+                                Create Event
                             </button>
                         </div>
                     </form>
@@ -199,35 +219,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
-
-    <!-- Modal -->
-    <div id="modal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-base-300 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-base-200 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div>
-                    <h3 class="text-lg font-medium leading-6 text-gray-900" id="modal-title">Confirmation</h3>
-                    <div class="mt-2">
-                        <p class="text-sm text-gray-500">
-                            Are you sure you want to cancel this event?
-                        </p>
-                    </div>
-                </div>
-                <div class="mt-5 sm:mt-4 sm:flex sm:justify-end">
-                    <button type="button" class="btn btn-secondary btn-sm mr-3" onclick="document.getElementById('modal').classList.add('hidden')">Cancel</button>
-                    <button type="button" class="btn btn-danger btn-sm" id="confirmDeleteButton">Confirm</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // JavaScript to handle modal confirmation
-        document.getElementById('confirmDeleteButton').addEventListener('click', function() {
-            // Code to handle deletion goes here
-            window.location.href = 'delete_event.php?id=<?= $event_id ?>';
-        });
-    </script>
 </body>
 </html>
