@@ -3,13 +3,13 @@ session_start();
 require "../config.php";
 
 if (!isset($_SESSION["user_id"])) {
-	header("Location: ../index.php?page=login");
-	exit();
+    header("Location: ../index.php?page=login");
+    exit();
 }
 
 $user_id = $_SESSION["user_id"];
 
-$stmt_user = $pdo->prepare("SELECT name, email FROM users WHERE id = ?");
+$stmt_user = $pdo->prepare("SELECT name, email, profile_picture FROM users WHERE id = ?");
 $stmt_user->execute([$user_id]);
 $user = $stmt_user->fetch(PDO::FETCH_ASSOC);
 
@@ -40,6 +40,9 @@ $registered_events = $stmt_history->fetchAll(PDO::FETCH_ASSOC);
             <div class="bg-base-200 shadow-xl rounded-lg p-4 sm:p-6">
                 <h2 class="text-lg sm:text-xl lg:text-2xl font-semibold mb-3 sm:mb-4 text-base-content text-white break-words">Profile Information</h2>
                 <div class="space-y-2 sm:space-y-3 text-base-content text-sm sm:text-base">
+                    <div class="mb-4">
+                        <img src="../images/<?= htmlspecialchars($user['profile_picture']) ?>" alt="Profile Picture" class="w-20 h-20 rounded-full">
+                    </div>
                     <p class="break-all"><span class="font-semibold">Name:</span> <?php echo htmlspecialchars($user['name']); ?></p>
                     <p class="break-all"><span class="font-semibold">Email:</span> <?php echo htmlspecialchars($user['email']); ?></p>
                 </div>

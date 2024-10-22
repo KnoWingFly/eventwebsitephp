@@ -41,3 +41,6 @@ ALTER TABLE users ADD reset_token VARCHAR(255) NULL, ADD reset_token_expiry DATE
 ALTER TABLE registrations 
 ADD CONSTRAINT fk_event 
 FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE;
+
+use event_registration;
+ALTER TABLE users ADD profile_picture VARCHAR(255) NULL;
