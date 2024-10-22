@@ -31,7 +31,6 @@ $events = $stmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Event Manager</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
     <link href="../css/output.css" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
@@ -78,9 +77,28 @@ $events = $stmt->fetchAll();
             margin-top: auto;
         }
 
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-open {
+            background-color: green;
+        }
+
+        .status-closed {
+            background-color: orange;
+        }
+
+        .status-canceled {
+            background-color: red;
+        }
+
         /* Add margin between action buttons */
         .action-buttons a {
-            margin-right: 0.5rem; /* Adjust margin as needed */
+            margin-right: 0.5rem;
         }
     </style>
 </head>
@@ -89,7 +107,6 @@ $events = $stmt->fetchAll();
         <!-- Sidebar -->
         <aside class="sidebar">
             <nav class="sidebar-menu">
-                <!-- Updated Links and Icons -->
                 <a href="create_event.php" class="tooltip tooltip-right" data-tip="Create Event">
                     <i class="ph ph-plus-circle"></i>
                     <span class="link-text">Create Event</span>
@@ -122,6 +139,7 @@ $events = $stmt->fetchAll();
                             <th>Event Name</th>
                             <th>Date</th>
                             <th>Registrants</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -131,6 +149,15 @@ $events = $stmt->fetchAll();
                             <td><?= htmlspecialchars($event["name"]) ?></td>
                             <td><?= htmlspecialchars($event["event_date"]) ?></td>
                             <td><?= htmlspecialchars($event["registrants"]) ?> / <?= htmlspecialchars($event["max_participants"]) ?></td>
+                            <td>
+                                <div class="flex items-center gap-2">
+                                    <!-- Status Indicator with custom CSS -->
+                                    <span class="status-indicator 
+                                        <?= ($event['status'] == 'open') ? 'status-open' : (($event['status'] == 'closed') ? 'status-closed' : 'status-canceled') ?>">
+                                    </span>
+                                    <span><?= htmlspecialchars(ucfirst($event["status"])) ?></span>
+                                </div>
+                            </td>
                             <td>
                                 <div class="flex gap-2 action-buttons">
                                     <a href="registrants.php?event_id=<?= $event["id"] ?>" class="btn btn-sm btn-info">
@@ -152,7 +179,6 @@ $events = $stmt->fetchAll();
         </main>
     </div>
 
-    <!-- Delete Confirmation Modal -->
     <dialog id="deleteModal" class="modal">
         <form method="dialog" class="modal-box">
             <h3 class="font-bold text-lg">Confirm Deletion</h3>
@@ -179,31 +205,6 @@ $events = $stmt->fetchAll();
         document.getElementById('confirmDelete').addEventListener('click', function() {
             if (deleteEventId) {
                 window.location.href = 'delete_event.php?id=' + deleteEventId;
-            }
-        });
-
-        // Add touch event listeners for mobile devices
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const sidebar = document.querySelector('.sidebar');
-            let touchStartX = 0;
-            let touchEndX = 0;
-
-            sidebar.addEventListener('touchstart', e => {
-                touchStartX = e.changedTouches[0].screenX;
-            }, false);
-
-            sidebar.addEventListener('touchend', e => {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            }, false);
-
-            function handleSwipe() {
-                if (touchEndX < touchStartX) {
-                    sidebar.style.width = '4rem';
-                }
-                if (touchEndX > touchStartX) {
-                    sidebar.style.width = '16rem';
-                }
             }
         });
     </script>
