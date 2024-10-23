@@ -193,41 +193,20 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
             gap: 0.5rem;
         }
         
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .header-container {
-                flex-direction: column;
-                align-items: stretch;
-            }
 
-            .container {
-                padding-left: 10px;
-                padding-right: 10px;
-            }
-            .search-container {
-                order: 3;
-                max-width: none;
-                margin: 0.5rem 0;
-            }
-
-            .nav-buttons {
-                order: 2;
-                justify-content: flex-end;
-                margin-top: 0.5rem;
-            }
         }
     </style>
 </head>
 <body class="min-h-screen">
-    <!-- Header -->
-    <nav class="w-full bg-gray-800 text-white shadow-lg">
-        <div class="container mx-auto flex justify-between items-center px-6 py-4">
-            <a href="dashboard.php" class="text-3xl font-bold">Event System</a>
-            
-            <div class="w-full md:w-1/3">
+<!-- Header -->
+<nav class="w-full bg-gray-800 text-white shadow-lg">
+    <div class="container mx-auto px-6 py-6">
+        <div class="flex flex-wrap md:flex-nowrap justify-center items-center space-y-4 md:space-y-0">
+            <a href="dashboard.php" class="text-3xl font-bold flex-shrink-0 mr-4">Event System</a>
+            <div class="center w-full ml-3 md:w-1/3 flex-grow md:mx-4">
                 <input id="search-bar" type="text" placeholder="Search events..." class="w-full p-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400">
             </div>
-            <div class="flex space-x-4">
+            <div class="flex space-x-4 flex-shrink-0 ml-4">
                 <a href="profile.php" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition duration-300">
                     <i class="ph ph-user mr-2"></i>Profile
                 </a>
@@ -236,7 +215,9 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
                 </a>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
+
 
     <!-- Main Content -->
     <main class="container mx-auto px-6 py-8">
