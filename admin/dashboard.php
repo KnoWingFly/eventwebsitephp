@@ -111,10 +111,6 @@ $events = $stmt->fetchAll();
                     <i class="ph ph-plus-circle"></i>
                     <span class="link-text">Create Event</span>
                 </a>
-                <a href="views_user.php" class="tooltip tooltip-right" data-tip="User Views">
-                    <i class="ph ph-eye"></i>
-                    <span class="link-text">User Views</span>
-                </a>
                 <a href="manage_user.php" class="tooltip tooltip-right" data-tip="User Management">
                     <i class="ph ph-user-gear"></i>
                     <span class="link-text">User Management</span>
