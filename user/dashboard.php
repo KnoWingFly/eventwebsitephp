@@ -68,9 +68,21 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
         }
 
         .card-header {
-            background-color: #1a202c;
-            color: white;
-            padding: 1rem;
+            position: relative;
+            padding: 20px;
+            background-color: #2d2d2d; 
+        }
+        
+        .event-banner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            filter: blur(2px); 
+            opacity: 0.6; 
         }
 
         .card-body {
@@ -101,8 +113,10 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
             color: white;
         }
 
-        .card h3 {
-            color: white;
+        .card-header h3 {
+            position: relative;
+            z-index: 10; 
+            color: #fff; 
         }
 
         .card p {
@@ -230,8 +244,11 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php foreach ($all_events as $event): ?>
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="text-xl font-bold"><?= htmlspecialchars($event["name"]) ?></h3>
+                    <div class="card-header relative">
+                        <?php if (!empty($event['banner'])): ?>
+                            <div class="event-banner" style="background-image: url('../uploads/<?= htmlspecialchars($event['banner']) ?>');"></div>
+                        <?php endif; ?>
+                        <h3 class="text-xl font-bold relative z-10"><?= htmlspecialchars($event["name"]) ?></h3>
                     </div>
                     <div class="card-body">
                         <div class="flex items-center mb-2">
@@ -265,9 +282,10 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
     </main>
 
     <!-- View Details Modal Structure -->
-    <div id="eventDetailsModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
-            <div class="mb-4">
+    <div id="eventDetailsModal" class="fixed inset-0 bg-base-100 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-base-100 p-6 rounded-lg shadow-xl max-w-lg w-full">
+            <!-- Banner container with display:none instead of hidden class -->
+            <div id="eventBannerContainer" class="mb-4" style="display: none;">
                 <img id="eventBanner" src="" alt="Event Banner" class="w-full h-48 object-cover rounded-t-lg">
             </div>
             <h2 class="text-2xl font-bold mb-4">Event Details</h2>
@@ -330,41 +348,65 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
                     method: 'GET',
                     data: { query: query },
                     success: function(response) {
-                        let events = JSON.parse(response);
+                        let events;
+                        
+                        // Safely parse JSON
+                        try {
+                            events = JSON.parse(response);
+                        } catch (e) {
+                            console.error('Failed to parse JSON response:', e);
+                            events = [];
+                        }
+
                         let eventRows = '';
 
-                        if (events.length > 0) {
+                        if (Array.isArray(events) && events.length > 0) {  // Verify events is an array
                             events.forEach(function(event) {
-                                let isRegistered = registeredEvents.includes(parseInt(event.id));
+                                // Verify event object has required properties
+                                if (!event || typeof event !== 'object') return;
+                                
+                                // Use optional chaining and nullish coalescing for safer property access
+                                const eventId = event?.id || '';
+                                const eventName = event?.name || '';
+                                const eventDate = event?.event_date || '';
+                                const eventLocation = event?.location || '';
+                                const eventStatus = event?.status || '';
+                                const eventBanner = event?.banner || '';
+                                
+                                let isRegistered = registeredEvents.includes(parseInt(eventId));
+                                
                                 eventRows += `
                                     <div class="card">
-                                        <div class="card-header">
-                                            <h3 class="text-xl font-bold">${event.name}</h3>
+                                        <div class="card-header relative">
+                                            ${eventBanner ? `<div class="event-banner" style="background-image: url('../uploads/${eventBanner}');"></div>` : ''}
+                                            <h3 class="text-xl font-bold relative z-10">${eventName}</h3>
                                         </div>
-                                        <div class="card-body">
-                                            <div class="flex items-center mb-2">
-                                                <i class="ph ph-calendar text-xl text-white mr-2"></i>
-                                                <p class="text-sm">${event.event_date}</p>
-                                            </div>
-                                            <div class="flex items-center mb-2">
-                                                <i class="ph ph-map-pin text-xl text-white mr-2"></i>
-                                                <p class="text-sm">${event.location}</p>
-                                            </div>
-                                            <p class="text-sm font-semibold status-${event.status} mb-4">
-                                                Status: ${event.status.charAt(0).toUpperCase() + event.status.slice(1)}
-                                            </p>
-                                            <div class="flex justify-between items-center">
-                                                <button class="view-details-btn btn" data-event-id="${event.id}">View Details</button>
-                                                ${isRegistered ? 
-                                                    `<div class="flex items-center">
-                                                        <span class="registered-text font-bold mr-2">Registered</span>
-                                                        <button class="cancel-btn btn" data-event-id="${event.id}">Cancel</button>
-                                                    </div>` :
-                                                    (event.status === 'open' ? 
-                                                        `<button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg register-btn btn" data-event-id="${event.id}">Register</button>` : 
-                                                        '<span class="registration-closed-text">Registration Closed</span>'
-                                                    )
-                                                }
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="flex items-center mb-2">
+                                                    <i class="ph ph-calendar text-xl text-white mr-2"></i>
+                                                    <p class="text-sm">${eventDate}</p>
+                                                </div>
+                                                <div class="flex items-center mb-2">
+                                                    <i class="ph ph-map-pin text-xl text-white mr-2"></i>
+                                                    <p class="text-sm">${eventLocation}</p>
+                                                </div>
+                                                <p class="text-sm font-semibold status-${eventStatus} mb-4">
+                                                    Status: ${eventStatus.charAt(0).toUpperCase() + eventStatus.slice(1)}
+                                                </p>
+                                                <div class="flex justify-between items-center">
+                                                    <button class="view-details-btn btn" data-event-id="${eventId}">View Details</button>
+                                                    ${isRegistered ? 
+                                                        `<div class="flex items-center">
+                                                            <span class="registered-text font-bold mr-2">Registered</span>
+                                                            <button class="cancel-btn btn" data-event-id="${eventId}">Cancel</button>
+                                                        </div>` :
+                                                        (eventStatus === 'open' ? 
+                                                            `<button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg register-btn btn" data-event-id="${eventId}">Register</button>` : 
+                                                            '<span class="registration-closed-text">Registration Closed</span>'
+                                                        )
+                                                    }
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -376,8 +418,9 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
 
                         $('.grid').html(eventRows);
                     },
-                    error: function() {
-                        alert('Error fetching events.');
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', error);
+                        $('.grid').html('<div class="text-center py-6">Error loading events</div>');
                     }
                 });
             });
@@ -386,7 +429,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
             $(document).on('click', '.view-details-btn', function() {
                 selectedEventId = $(this).data('event-id');
                 $.ajax({
-                    url: 'event_details.php', // Fetch event details via AJAX
+                    url: 'event_details.php',
                     method: 'GET',
                     data: { event_id: selectedEventId },
                     success: function(response) {
@@ -399,13 +442,30 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
                         $('#maxParticipants').text(event.max_participants);
                         $('#eventStatus').text(event.status.charAt(0).toUpperCase() + event.status.slice(1));
 
-                        if (event.banner && event.banner !== '') {
-                            $('#eventBanner').attr('src', '../uploads/' + event.banner).show();
+                        // Enhanced banner visibility handling
+                        const bannerContainer = $('#eventBannerContainer');
+                        if (event.banner) {
+                            // Set image source and handle load/error events
+                            const bannerImg = $('#eventBanner');
+                            bannerImg
+                                .on('load', function() {
+                                    // Image loaded successfully
+                                    bannerContainer.show();
+                                })
+                                .on('error', function() {
+                                    // Image failed to load
+                                    bannerContainer.hide();
+                                    console.log('Failed to load image:', event.banner);
+                                })
+                                .attr('src', '../uploads/' + event.banner);
                         } else {
-                            $('#eventBanner').hide();
+                            bannerContainer.hide();
                         }
 
                         $('#eventDetailsModal').removeClass('hidden');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching event details:', error);
                     }
                 });
             });
@@ -413,6 +473,9 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
             // Close Event Details Modal
             $('#closeEventDetailsModal').on('click', function() {
                 $('#eventDetailsModal').addClass('hidden');
+                // Reset banner container and image when closing
+                $('#eventBannerContainer').hide();
+                $('#eventBanner').attr('src', '').off('load error');
             });
 
             // Handle register button click
@@ -475,7 +538,6 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
                 $('#registerModal, #cancelModal').addClass('hidden');
             });
 
-            // Close success modal and reload page
             $('#closeSuccessModal').on('click', function() {
                 $('#successModal').addClass('hidden');
                 location.reload();
