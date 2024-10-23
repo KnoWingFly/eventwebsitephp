@@ -225,7 +225,7 @@ $registered_events = $stmt_registered_events->fetchAll(PDO::FETCH_COLUMN, 0);
             <a href="dashboard.php" class="text-3xl font-bold">Event System</a>
             
             <div class="w-full md:w-1/3">
-                <input id="search-bar" type="text" placeholder="Search events..." class="w-full p-2 bg-gray-700 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400">
+                <input id="search-bar" type="text" placeholder="Search events..." class="w-full p-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400">
             </div>
             <div class="flex space-x-4">
                 <a href="profile.php" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition duration-300">
