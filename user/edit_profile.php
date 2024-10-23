@@ -18,6 +18,15 @@ $stmt_user->execute([$user_id]);
 $user = $stmt_user->fetch(PDO::FETCH_ASSOC);
 $previous_picture = $user['profile_picture'];  // Store the previous picture
 
+// Password validation function
+function isValidPassword($password) {
+    return preg_match('/[A-Z]/', $password) &&     
+           preg_match('/[a-z]/', $password) &&  
+           preg_match('/\d/', $password) &&     
+           preg_match('/[^A-Za-z0-9]/', $password) && 
+           strlen($password) >= 12;                
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $name = $_POST["name"];
     $email = $_POST["email"];
@@ -62,6 +71,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Update profile
     if (empty($error)) {
         if ($password && $password === $confirm_password) {
+            if (!isValidPassword($password)) {
+                $error = "Password does not meet the criteria!";
+                header("Location: edit_profile.php?error=" . urlencode($error));
+                exit();
+            }
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $stmt_update = $pdo->prepare("UPDATE users SET name = ?, email = ?, password = ?, profile_picture = ? WHERE id = ?");
             $stmt_update->execute([$name, $email, $hashed_password, $profile_picture, $user_id]);
@@ -88,6 +102,37 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>Edit Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="../css/output.css" rel="stylesheet">
+    <style>
+        .popup {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 50;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .popup.active {
+            display: block;
+        }
+
+        .requirement-met {
+            color: green;
+        }
+
+        .requirement-not-met {
+            color: red;
+        }
+
+        .btn-disabled {
+            background-color: gray !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+        }
+    </style>
 </head>
 <body class="flex justify-center items-center min-h-screen bg-gray-900">
     <div class="bg-gray-800 rounded-lg shadow-lg p-8 max-w-md w-full">
@@ -122,22 +167,124 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <?php endif; ?>
             </div>
 
-            <div class="mb-4">
+            <div class="mb-4 relative">
                 <label for="password" class="block text-gray-300 mb-1">New Password</label>
-                <input type="password" name="password" id="password" 
-                    class="block w-full rounded-lg p-3 bg-gray-700 text-white focus:ring-purple-500 focus:ring-2 focus:outline-none">
+                <input type="password" name="password" id="password" class="block w-full rounded-lg p-3 bg-gray-700 text-white focus:ring-purple-500 focus:ring-2 focus:outline-none">
+                <div id="password-popup" class="popup bg-base-100">
+                    <ul id="password-requirements-list" class="list-disc list-inside">
+                        <li id="min-length" class="requirement-not-met">At least 12 characters</li>
+                        <li id="uppercase" class="requirement-not-met">At least one uppercase letter</li>
+                        <li id="lowercase" class="requirement-not-met">At least one lowercase letter</li>
+                        <li id="number" class="requirement-not-met">At least one number</li>
+                        <li id="special-char" class="requirement-not-met">At least one special character</li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="mb-4">
+            <div class="mb-4 relative">
                 <label for="confirm_password" class="block text-gray-300 mb-1">Confirm New Password</label>
                 <input type="password" name="confirm_password" id="confirm_password" 
                     class="block w-full rounded-lg p-3 bg-gray-700 text-white focus:ring-purple-500 focus:ring-2 focus:outline-none">
+                <div id="confirm-popup" class="popup bg-base-100">
+                    <p id="confirm-message" class="requirement-not-met">Passwords do not match</p>
+                </div>
             </div>
 
-            <button type="submit" class="w-full p-3 bg-purple-600 hover:bg-purple-700 rounded-lg text-white font-semibold">
+            <button type="submit" id="submit-btn" class="w-full p-3 bg-purple-600 hover:bg-purple-700 rounded-lg text-white font-semibold btn-disabled" disabled>
                 Update Profile
             </button>
         </form>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#submit-btn').prop('disabled', false).removeClass('btn-disabled');
+
+            const passwordField = $('#password');
+            const confirmPasswordField = $('#confirm_password');
+            const submitBtn = $('#submit-btn');
+            const passwordPopup = $('#password-popup');
+            const confirmPopup = $('#confirm-popup');
+            const confirmMessage = $('#confirm-message');
+
+            // Show password requirements popup on focus
+            passwordField.on('focus', function() {
+                passwordPopup.addClass('active');
+            });
+
+            // Hide password popup on blur
+            passwordField.on('blur', function() {
+                setTimeout(function() {
+                    passwordPopup.removeClass('active');
+                }, 200);  // Delay to allow clicking on the popup without it disappearing too quickly
+            });
+
+            // Show confirm password popup on focus
+            confirmPasswordField.on('focus', function() {
+                confirmPopup.addClass('active');
+            });
+
+            // Hide confirm password popup on blur
+            confirmPasswordField.on('blur', function() {
+                setTimeout(function() {
+                    confirmPopup.removeClass('active');
+                }, 200);
+            });
+
+            // Password Requirements Validation on Keyup
+            passwordField.on('keyup', function() {
+                const password = $(this).val();
+                const isMinLength = password.length >= 12;
+                const hasUppercase = /[A-Z]/.test(password);
+                const hasLowercase = /[a-z]/.test(password);
+                const hasNumber = /\d/.test(password);
+                const hasSpecialChar = /[^A-Za-z0-9]/.test(password);
+
+                $('#min-length').toggleClass('requirement-met', isMinLength).toggleClass('requirement-not-met', !isMinLength);
+                $('#uppercase').toggleClass('requirement-met', hasUppercase).toggleClass('requirement-not-met', !hasUppercase);
+                $('#lowercase').toggleClass('requirement-met', hasLowercase).toggleClass('requirement-not-met', !hasLowercase);
+                $('#number').toggleClass('requirement-met', hasNumber).toggleClass('requirement-not-met', !hasNumber);
+                $('#special-char').toggleClass('requirement-met', hasSpecialChar).toggleClass('requirement-not-met', !hasSpecialChar);
+
+                checkFormValidity();
+            });
+
+            // Check if passwords match on keyup
+            confirmPasswordField.on('keyup', function() {
+                const password = passwordField.val();
+                const confirmPassword = $(this).val();
+                
+                if (password === confirmPassword) {
+                    confirmMessage.text("Passwords match").removeClass('requirement-not-met').addClass('requirement-met');
+                } else {
+                    confirmMessage.text("Passwords do not match").removeClass('requirement-met').addClass('requirement-not-met');
+                }
+
+                checkFormValidity();
+            });
+
+            // Check Form Validity (password and confirm password must match)
+            function checkFormValidity() {
+                const password = passwordField.val();
+                const confirmPassword = confirmPasswordField.val();
+                const isFormValid = (
+                    password === '' || 
+                    (
+                        password.length >= 12 &&
+                        /[A-Z]/.test(password) &&
+                        /[a-z]/.test(password) &&
+                        /\d/.test(password) &&
+                        /[^A-Za-z0-9]/.test(password) &&
+                        password === confirmPassword
+                    )
+                );
+
+                // Button should only be disabled when there's input in the new password field and it doesn't meet the criteria
+                submitBtn.prop('disabled', password !== '' && !isFormValid);
+                submitBtn.toggleClass('btn-disabled', password !== '' && !isFormValid);
+            }
+        });
+    </script>
 </body> 
 </html>
