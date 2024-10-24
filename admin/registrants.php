@@ -203,10 +203,13 @@ if (isset($_GET["export"]) && $_GET["export"] === "xlsx") {
                class="btn-back hover:bg-blue-700 py-2 px-4 rounded-lg">
                Back to Dashboard
             </a>
-            <a href="registrants.php?event_id=<?= $event_id ?>&export=xlsx" 
-               class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-lg">
-               Export to Excel
+
+            <?php if (!empty($registrants)):?>
+            <a href="registrants.php?event_id=<?= $event_id ?>&export=xlsx" class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-lg">
+                Export to Excel
             </a>
+            
+    <?php endif; ?>
         </div>
 
         <div class="bg-white shadow-lg rounded-lg p-6" style="background-color: #1e1e1e; color: white;">
