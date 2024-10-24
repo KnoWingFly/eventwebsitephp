@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 		$stmt->execute([$token, $email]);
 
 		$reset_link =
-			"http://localhost:8000/user/reset_password.php?token=" . $token;
+			"http://kelompok3h.aur-auran.my.id/user/reset_password.php?token=" . $token;
 
 		$mail = new PHPMailer(true);
 
